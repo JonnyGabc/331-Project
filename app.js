@@ -11,14 +11,20 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images',express.static(path.join(__dirname,'public/images')));
+app.use('/javascripts',express.static(path.join(__dirname,'public/javascripts')));
+app.use('/stylesheets',express.static(path.join(__dirname,'public/stylesheets')));
 
+// app.get((req,res)=>{
+//   res.render(express.static(path.join(__dirname,'./public/index.html')));
+// })
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

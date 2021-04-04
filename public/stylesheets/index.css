@@ -1,0 +1,13 @@
+body{
+    margin:0;
+    padding:0;
+}
+
+h1{
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+#map{
+    height: 500px;
+    margin-bottom: 50px;
+}
