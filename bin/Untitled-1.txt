@@ -1,0 +1,18 @@
+{
+    _id:
+    callSign: 
+    aircraftType:
+    flightPlan:
+    squawk:
+    proposedTime:
+    requiredAltitude:
+    departmentAirport:
+    completeRoute:
+    remarks:
+    lastFix:
+    coord:
+    entryTime:
+    altitude:
+    remainingRoute:    
+
+}
