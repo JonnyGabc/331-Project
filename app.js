@@ -3,9 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const dataBaseConnection= require('./routes/getAirplaneData')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const getAirplaneData = require('./routes/getAirplaneData');
 
 var app = express();
 
@@ -22,12 +24,19 @@ app.use('/images',express.static(path.join(__dirname,'public/images')));
 app.use('/javascripts',express.static(path.join(__dirname,'public/javascripts')));
 app.use('/stylesheets',express.static(path.join(__dirname,'public/stylesheets')));
 
-// app.get((req,res)=>{
-//   res.render(express.static(path.join(__dirname,'./public/index.html')));
-// })
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.get('/db',function(req,res){
+  getAirplaneData()
+  .then(result=>{
+    res.send({Success:true,message:result})
+  })
+  .catch(err=>{
+    res.send({Success:false,message:err})
+  })
+})
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
