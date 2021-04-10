@@ -12,7 +12,7 @@ module.exports=async function dataQuery() {
               reject({Success:"false",Message:"No Data was retrieved. Error: "+err});
             }
             else {              
-              resolve({Success:'true',Message:result})
+              resolve({Success:true, Message:result})
             }
           })     
           database.close()

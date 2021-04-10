@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Create a draggable Marker</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+    <script src="javascripts/fetchAirplaneData.js"></script>
+    <style>
+        .wrapper{
+            border-style: inset;
+            width: auto;
+            height: auto;
+            margin: 25px;
+            
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            border-style: inset;
+            width: 800px;
+            height: 600px;
+            margin: auto;
+            margin-top: 100px;
+        }
+
+        #leftBox {
+            position: absolute;
+            width: 600px;
+            height: 500px;
+            top :50px;
+            left:50px;
+            border-style: inset;
+            margin: auto
+        }
+    </style>
+</head>
+<script>
+window.onload=(function(){    
+    fetchAirplaneData()
+})
+</script>
+<body>
+    <style>
+        .coordinates {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            padding: 5px 10px;
+            margin: 0;
+            font-size: 11px;
+            line-height: 18px;
+            border-radius: 3px;
+            display: none;
+        }
+    </style>
+    <div class="wrapper">
+        <div id="map"></div>
+        <pre id="coordinates" class="coordinates"></pre>
+        <div id="leftBox">
+            <p>airplane data</p>
+        </div>
+    </div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';
+        var coordinates = document.getElementById('coordinates');
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [0, 0],
+            zoom: 2
+        });
+
+        var marker = new mapboxgl.Marker({
+            draggable: true
+        })
+            .setLngLat([0, 0])
+            .addTo(map);
+
+        function onDragEnd() {
+            var lngLat = marker.getLngLat();
+            coordinates.style.display = 'block';
+            coordinates.innerHTML =
+                'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
+        }
+
+        marker.on('dragend', onDragEnd);
+    </script>
+
+</body>
+
+</html>

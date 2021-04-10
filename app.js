@@ -31,11 +31,15 @@ app.use('/users', usersRouter);
 app.get('/db',function(req,res){
   getAirplaneData()
   .then(result=>{
-    res.send({Success:true,message:result})
+    res.send(result)
   })
   .catch(err=>{
-    res.send({Success:false,message:err})
+    res.send(err)
   })
+})
+
+app.get('/test', function(req,res){
+  res.sendFile(path.join(__dirname,'./public/test.html'));
 })
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
