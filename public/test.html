@@ -9,13 +9,20 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
     <script src="javascripts/fetchAirplaneData.js"></script>
     <style>
-        .wrapper{
+        .flex-container {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        #wrapper {
             border-style: inset;
             width: auto;
             height: auto;
             margin: 25px;
-            
+            justify-content: left;
+
         }
+
         body {
             margin: 0;
             padding: 0;
@@ -23,28 +30,93 @@
 
         #map {
             border-style: inset;
-            width: 800px;
+            width: 900px;
             height: 600px;
             margin: auto;
             margin-top: 100px;
+            margin-bottom: 100px;
         }
 
         #leftBox {
-            position: absolute;
+            position: relative;
             width: 600px;
-            height: 500px;
-            top :50px;
-            left:50px;
+            height: 1000px;
             border-style: inset;
-            margin: auto
+            margin: auto;
+            margin-left: 50px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            overflow: hidden
+        }
+
+        #rightBox{
+            position: relative;
+            width: 600px;
+            height: 1000px;
+            border-style: inset;
+            margin: auto;
+            margin-right: 50px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            overflow: hidden
+
+        }
+
+        #leftBoxText {
+            position: absolute;
+            left: 50px;
+            top: 75px;
+            width: 500px;
+            height: 600px;
+            max-width: 500px;
+            max-height: 600px;
+            border-style: inset;
+            margin: auto;            
+
+            overflow: scroll
+        }
+
+        #rightBoxText {
+            position: absolute;
+            left:50px;
+            top:75px;
+            width: 500px;
+            height: 600px;
+            max-width: 500px;
+            max-height: 600px;
+            border-style: inset;
+            margin: auto;
+            overflow: scroll
+        }
+
+        input[type=text] {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            width: 130px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background-image: url('searchicon.png');
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 40px;
+            transition: width 0.4s ease-in-out;
+        }
+
+        input[type=text]:focus {
+            width: 55%;
         }
     </style>
 </head>
 <script>
-window.onload=(function(){    
-    fetchAirplaneData()
-})
+    window.onload = (function () {
+        fetchAirplaneData()
+    })
 </script>
+
 <body>
     <style>
         .coordinates {
@@ -61,12 +133,26 @@ window.onload=(function(){
             display: none;
         }
     </style>
-    <div class="wrapper">
-        <div id="map"></div>
-        <pre id="coordinates" class="coordinates"></pre>
-        <div id="leftBox">
-            <p>airplane data</p>
+    <div class="flex-container" id="wrapper">
+        <div class="flex-container" id="leftBox">
+            <div>
+                <input type="text" name="search" placeholder="Search..">
+            </div>
+            <div class="flex-container" id="leftBoxText">
+                <p>airplane data</p>
+            </div>
         </div>
+        <div id="map" style="display:flex; flex-wrap:nowrap"></div>
+        <pre id="coordinates" class="coordinates"></pre>
+        <div class="flex-container" id="rightBox">
+            <form>
+                <input type="text" name="search" placeholder="Search..">
+            </form>
+            <div class="flex-container" id="rightBoxText">                
+                <p>airport data</p>
+            </div>
+        </div>
+
     </div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';

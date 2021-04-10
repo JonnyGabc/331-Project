@@ -14,7 +14,7 @@ function fetchAirplaneData() {
                 airPlaneDataObj.Message.forEach(element => {
                     let p = document.createElement('p')
                     p.innerHTML = JSON.stringify(element)
-                    document.getElementById('leftBox').appendChild(p)
+                    document.getElementById('leftBoxText').appendChild(p)
                 });
             }
             else {
