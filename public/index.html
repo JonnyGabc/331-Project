@@ -1,33 +1,344 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset='utf-8' />
-        <title>Mapbox</title>        
-        <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
-        <link rel="stylesheet" href="stylesheets/index.css">
-        <link href="https://fonts.googleapi.com/css?family=Noto+Sans+JP" rel="stylesheet">
-    </head>
-    <div id='map' style='width: 800px; height: 600px; margin:auto'></div>
-    <div class='left-box' style="background-color: white; height: 800px; width: 400px;  position: fixed; top: 0;left: 0; border: 3px solid #73AD21;"
-    <div class="input-group rounded" style="position: fixed; top: 20;left: 150;">
-        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
-          aria-describedby="search-addon" />
-        <span class="input-group-text border-0" id="search-addon">
-          <i class="fas fa-search"></i>
-        </span>
-      </div>
 
-        
-    ></div>
-<body>
-<script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+<head>
+    <meta charset="utf-8">
+    <title>Create a draggable Marker</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="javascripts/fetchAirplaneData.js"></script>
+    <style>
+        .flex-container {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        #wrapper {
+            border-style: inset;
+            width: auto;
+            height: auto;
+            margin: 25px;
+            justify-content: left;
+
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            border-style: inset;
+            width: 900px;
+            height: 600px;
+            margin: auto;
+            margin-top: 100px;
+            margin-bottom: 100px;
+        }
+
+        #leftBox {
+            position: relative;
+            width: 600px;
+            height: 1000px;
+            border-style: inset;
+            margin: auto;
+            margin-left: 50px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            overflow: hidden
+        }
+
+        #rightBox {
+            position: relative;
+            width: 600px;
+            height: 1000px;
+            border-style: inset;
+            margin: auto;
+            margin-right: 50px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            overflow: hidden
+        }
+
+        #leftBoxText {
+            position: absolute;
+            left: 50px;
+            top: 75px;
+            width: 500px;
+            height: 600px;
+            max-width: 500px;
+            max-height: 600px;
+            border-style: inset;
+            margin: auto;
+
+            overflow: scroll
+        }
+
+        #rightBoxText {
+            background-image: url('images/cat.jpg');
+            position: absolute;
+            left: 50px;
+            top: 75px;
+            width: 500px;
+            height: 600px;
+            max-width: 500px;
+            max-height: 600px;
+            border-style: inset;
+            margin: auto;
+            overflow: scroll
+        }
+
+        input[type=text] {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            width: 130px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background-image: url('searchicon.png');
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 40px;
+            transition: width 0.4s ease-in-out;
+        }
+
+        input[type=text]:focus {
+            width: 55%;
+        }
+    </style>
+</head>
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';
-    var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11'
-    });
+    window.onload = (function () {
+        fetchAirplaneData()
+    })
+</script>
+
+<body>
+    <style>
+        .coordinates {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            padding: 5px 10px;
+            margin: 0;
+            font-size: 11px;
+            line-height: 18px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        .overlay {
+            position: relative;
+            top: 10px;
+            left: 10px;
+        }
+
+        .overlay button {
+            font: 600 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            background-color: #3386c0;
+            color: #fff;
+            display: inline-block;
+            margin: 0;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .overlay button:hover {
+            background-color: #4ea0da;
+        }
+    </style>
+    <div class="flex-container" id="wrapper">
+        <div class="flex-container" id="leftBox">
+            <div>
+                <input type="text" name="search" placeholder="Search..">
+            </div>
+            <div class="flex-container" id="leftBoxText">
+                <p>airplane data</p>
+            </div>
+        </div>
+        <div id="map" style="display:flex; flex-wrap:nowrap"></div>
+        <div class="overlay">
+            <button id="replay">Replay</button>
+            </div>
+            
+        <pre id="coordinates" class="coordinates"></pre>
+        <div class="flex-container" id="rightBox">
+            <form>
+                <input type="text" name="search" placeholder="Search..">
+            </form>
+            <div class="flex-container" id="rightBoxText">
+                <p>airport data</p>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';
+        var coordinates = document.getElementById('coordinates');
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-96, 37.8],
+            zoom: 3
+        });
+
+        var origin = [-122.414, 37.776];
+
+        // Washington DC
+        var destination = [-77.032, 38.913];
+
+        // A simple line from origin to destination.
+        var route = {
+            'type': 'FeatureCollection',
+            'features': [
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [origin, destination]
+                    }
+                }
+            ]
+        };
+
+        // A single point that animates along the route.
+        // Coordinates are initially set to origin.
+        var point = {
+            'type': 'FeatureCollection',
+            'features': [
+                {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': origin
+                    }
+                }
+            ]
+        };
+
+        // Calculate the distance in kilometers between route start/end point.
+        var lineDistance = turf.length(route.features[0]);
+
+        var arc = [];
+
+        // Number of steps to use in the arc and animation, more steps means
+        // a smoother arc and animation, but too many steps will result in a
+        // low frame rate
+        var steps = 500;
+
+        // Draw an arc between the `origin` & `destination` of the two points
+        for (var i = 0; i < lineDistance; i += lineDistance/steps) {
+            var segment = turf.along(route.features[0],i);
+            arc.push(segment.geometry.coordinates);
+        }
+
+        // // // Update the route with calculated arc coordinates
+        route.features[0].geometry.coordinates = arc;
+
+        // Used to increment the value of the point measurement against the route.
+        var counter = 0;
+
+        map.on('load', function () {
+            // Add a source and layer displaying a point which will be animated in a circle.
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': route
+            });
+
+            map.addSource('point', {
+                'type': 'geojson',
+                'data': point
+            });
+
+            map.addLayer({
+                'id': 'route',
+                'source': 'route',
+                'type': 'line',
+                'paint': {
+                    'line-width': 2,
+                    'line-color': '#007cbf'
+                }
+            });
+
+            map.addLayer({
+                'id': 'point',
+                'source': 'point',
+                'type': 'symbol',
+                'layout': {
+                    'icon-image': 'airport-15',
+                    'icon-rotate': ['get', 'bearing'],
+                    'icon-rotation-alignment': 'map',
+                    'icon-allow-overlap': true,
+                    'icon-ignore-placement': true
+                }
+            });
+
+            function animate() {
+                var start =
+                    route.features[0].geometry.coordinates[
+                    counter >= steps ? counter - 1 : counter
+                    ];
+                var end =
+                    route.features[0].geometry.coordinates[
+                    counter >= steps ? counter : counter + 1
+                    ];
+                if (!start || !end) return;
+
+                // Update point geometry to a new position based on counter denoting
+                // the index to access the arc
+                point.features[0].geometry.coordinates =
+                    route.features[0].geometry.coordinates[counter];
+
+                // Calculate the bearing to ensure the icon is rotated to match the route arc
+                // The bearing is calculated between the current point and the next point, except
+                // at the end of the arc, which uses the previous point and the current point
+                point.features[0].properties.bearing = turf.bearing(
+                    turf.point(start),
+                    turf.point(end)
+                );
+
+                // Update the source with this new data
+                map.getSource('point').setData(point);
+
+                // Request the next frame of animation as long as the end has not been reached
+                if (counter < steps) {
+                    requestAnimationFrame(animate);
+                }
+
+                counter = counter + 1;
+            }
+
+            document
+                .getElementById('replay')
+                .addEventListener('click', function () {
+                    // Set the coordinates of the original point back to origin
+                    point.features[0].geometry.coordinates = origin;
+
+                    // Update the source layer
+                    map.getSource('point').setData(point);
+
+                    // Reset the counter
+                    counter = 0;
+
+                    // Restart the animation
+                    animate(counter);
+                });
+
+            // Start the animation
+            animate(counter);
+        });
     </script>
+
 </body>
 
 </html>
