@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Create a draggable Marker</title>
+    <title>FAA Flight Simulator</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
@@ -136,8 +136,8 @@
 
         .overlay {
             position: relative;
-            top: 10px;
-            left: 10px;
+            top: 50px;
+            right:150px;
         }
 
         .overlay button {
@@ -193,7 +193,6 @@
 
         var origin = [-122.414, 37.776];
 
-        // Washington DC
         var destination = [-77.032, 38.913];
 
         // A simple line from origin to destination.
@@ -238,12 +237,13 @@
 
         // Draw an arc between the `origin` & `destination` of the two points
         for (var i = 0; i < lineDistance; i += lineDistance/steps) {
-            var segment = turf.along(route.features[0],i);
+            var segment = turf.along(route.features[0],i);            
             arc.push(segment.geometry.coordinates);
         }
 
         // // // Update the route with calculated arc coordinates
         route.features[0].geometry.coordinates = arc;
+  
 
         // Used to increment the value of the point measurement against the route.
         var counter = 0;
@@ -284,6 +284,7 @@
             });
 
             function animate() {
+                console.log                
                 var start =
                     route.features[0].geometry.coordinates[
                     counter >= steps ? counter - 1 : counter

@@ -26,7 +26,7 @@ app.use('/stylesheets',express.static(path.join(__dirname,'public/stylesheets'))
 
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
 
 app.get('/db',function(req,res){
   getAirplaneData()
