@@ -12,9 +12,9 @@ function fetchAirplaneData() {
                 let airPlaneDataObj=JSON.parse(JSON.stringify(airPlaneData))
                 console.log(airPlaneDataObj.Message)
                 airPlaneDataObj.Message.forEach(element => {
-                    let p = document.createElement('p')
-                    p.innerHTML = JSON.stringify(element)
-                    document.getElementById('leftBoxText').appendChild(p)
+                    let text = document.createElement('text')
+                    text.innerHTML = JSON.stringify(element)
+                    document.getElementById('airplaneData').appendChild(text)
                 });
             }
             else {
