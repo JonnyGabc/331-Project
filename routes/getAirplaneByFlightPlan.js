@@ -7,11 +7,12 @@ module.exports=async function dataQuery(flightPlan) {
         var dbo = database.db("331DB");
         let searchQuery = {"flightPlan":flightPlan}
         await dbo.collection("flight_data").findOne(searchQuery)
-          .then( function (err,result) {  
-            if (null === result||err) {              
+          .then( function (result,err) {  
+            if (null === result||err||result===undefined) {              
               reject({Success:"false",Message:"No airplane exists with that flightPlan in the database Error: "+err});
             }
-            else {              
+            else {  
+              console.log(result)            
               resolve({Success:true, Message:result})
             }
           })     

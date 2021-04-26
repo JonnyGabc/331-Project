@@ -1,26 +1,19 @@
-function getAirport(event) {
-    event.preventDefault();
+async function getAirport(name) {
     const userData = {
-      model: document.getElementById('applianceModel').innerText
-    }
-    console.log(userData);
-    fetch('/browse-dishwashers', {
+      airportName: name
+    }    
+    fetch('/airportByName', {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.accessToken
+        'Content-Type': 'application/json',        
       },
       body: JSON.stringify(userData) // body data type must match "Content-Type" header
-    }).then(res => res.json())
-      .then(data => {
-        console.log(data.Success)
-        if (data.Success) {
-
-          alert('Successfully added to cart')
-        }
-        if (!data.Success) {
-          alert('Not added to cart')
-        }
+    }).then(res =>  res.json())    
+      .then(data => {       
+          console.log(JSON.stringify(data))
+          setTimeout(()=>{},5000)
+          return JSON.stringify(data)        
+        
       })
   }
-  document.getElementById('submitButton').addEventListener("click", getForm);
+  //document.getElementById('submitButton').addEventListener("click", getAirport(document.getElementById('airportSearch')));

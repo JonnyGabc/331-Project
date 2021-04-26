@@ -5,18 +5,23 @@
     <meta charset="utf-8">
     <title>FAA Flight Simulator</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-    
+
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="javascripts/fetchAirportByName.js"></script>
+    <script src="javascripts/displayAirplanes.js"></script>
+    <script src="javascripts/fetchAirplaneByFP.js"></script>
     <script src="javascripts/fetchAirplaneData.js"></script>
     <script src="javascripts/fetchAirportData.js"></script>
     <style>
+        @import url("stylesheets/textbox.css");
+
         .flex-container {
             display: flex;
             flex-wrap: nowrap;
             background-color: lightblue;
-            }
+        }
 
         #wrapper {
             border-style: inset;
@@ -78,14 +83,14 @@
             overflow: scroll
         }
 
-        #rightBoxText {            
+        #rightBoxText {
             position: absolute;
             left: 50px;
             top: 75px;
             width: 500px;
             height: 600px;
             max-width: 500px;
-            max-height: 600px;           
+            max-height: 600px;
             border-style: inset;
             margin: auto;
             overflow: scroll
@@ -111,13 +116,29 @@
         input[type=text]:focus {
             width: 55%;
         }
+
+        .btn-primary {
+            background-color: teal;
+            position: fixed;
+            left: 530px;
+            top: 93px;
+        }
     </style>
 </head>
 <script>
     window.onload = (function () {
+
         fetchAirplaneData()
-        fetchAirportData()
+        airplaneAnimation(1, 1)
+        // airplaneAnimation(1,2)
+
+        // fetchAirportData()
+
     })
+    function inputKey(){        
+        document.getElementById("airplaneInText").placeholder='G'
+    }
+document.getElementById('btnAlphaG').addEventListener("click",inputKey)
 </script>
 
 <body>
@@ -161,19 +182,53 @@
     <div class="flex-container" id="wrapper">
         <div class="flex-container" id="leftBox">
             <div>
-                <input type="text" name="search" placeholder="Search..">
+                <input type="text" name="search" placeholder="Search.." id="airplaneInText">
+                <div class="overlay">
+                    <button type="button" class="btn btn-primary" id='airplaneSearchButton'>Search</button>
+                    <script>document.getElementById('airplaneSearchButton').addEventListener("click", getAirplane)</script>
+                </div>
             </div>
-            
+
             <div class="flex-container" id="leftBoxText">
                 <div id="airplaneLabels" style="display: inline;">
-                <label>airplane number</label>
-                <label>airplane departure airport</label>
-                <label> airplane arrival airport </label>
-            </div>
-        
-            <div id="airplaneData">
+                    <div class="table" id="leftTable">
+                        <div class="tr">
+                            <!-- <span class="th">CALL SIGN</span> -->
+                            <span class="th">AIRPLANES </span>
+                            <!-- <span class="th">FLIGHT PLAN </span>
+                            <span class="th">REQUIRED ALTITUDE </span>
+                            <span class="th">DEPARTMENT AIRPORT</span>
+                            <span class="th">ARRIVING AIRPORT</span> -->
+                        </div>
+                        <div class="tr" id="airplaneInputData" style="display: none">
+                            <label style="white-space: nowrap; display: inline;">Call Sign</label><br><input
+                                class="callSign" placeholder='1' style="margin-left: 15px;"></span><br>
+                            <label style="display: inline;">Aircraft Type</label><br><input class="aircraftType"
+                                style="margin-left: 15px;"></span><br>
+                            <label style="display: inline;">Flight Plan</label><br><input class="flightPlan"
+                                placeholder='1' style="margin-left: 15px;"></span><br>
+                            <label style="white-space: nowrap; display: inline;">Required Altitude</label><br><input
+                                class="requiredAltitude" placeholder='1' style="margin-left: 15px;"></span><br>
+                            <label style="display: inline;">DepartMent Airport</label><br><input
+                                class="departmentAirport" placeholder='1' style="margin-left: 15px;"></span><br>
+                            <label style="display: inline;">Arriving Airport</label><br><input placeholder='6'
+                                class="arrivingAirport" placeholder='1' style="margin-left: 15px;"></span><br>
+                            <div class="td">
+                                <input type="image" src="./images/view-record-icon.svg" class="action-icon"
+                                    name="submit" alt="Submit search query">
+                                <input type="image" src="./images/edit-record-icon.svg" class="action-icon"
+                                    name="submit" alt="Submit search query">
+                                <input type="image" src="./images/delete-record-icon.svg" class="action-icon"
+                                    name="submit" alt="Submit search query">
+                            </div>
+                        </div>
 
-            </div>
+                    </div>
+                </div>
+
+                <div id="airplaneData">
+
+                </div>
             </div>
         </div>
         <div id="map" style="display:flex; flex-wrap:nowrap"></div>
@@ -184,34 +239,265 @@
         <pre id="coordinates" class="coordinates"></pre>
         <div class="flex-container" id="rightBox">
             <form>
-                <input type="text" name="search" placeholder="Search..">
+                <input type="text" name="search" placeholder="Search.." id="airportSearch">
             </form>
             <div class="flex-container" id="rightBoxText">
                 <div>
-                    <div id="airportLabels" style= "display:inline">                   
-                <label>Airport Name</label>
-                <label>Airport Lat</label>
-                <label>Airport Long</label>
-                <label></label>
-                    </div> 
-                    <div id="airportData">                
-            </div>
-            </div>
-        </div>
+                    <div id="airportLabels" style="display: inline;">
+                        <div class="table" id="rightTable">
+                            <div class="tr">
+                                <span class="th">VIEWABLE AIRPORTS</span>
+                            </div>
+                            <div id=airportInputData>
+                                <label style="white-space: nowrap; display: inline;">Airport</label><br><input
+                                    class="airportName" placeholder='PHL' style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Latitude</label><br><input class="lat" placeholder='39.87.29'
+                                    style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Longitude</label><br><input class="long" placeholder='-75.2437'
+                                    style="margin-left: 15px;"></span><br>
+                                <div class="td">
+                                    <input type="image" src="./images/view-record-icon.svg" class="action-icon"
+                                        name="submit" alt="Submit search query">
+                                </div>
+                            </div>
 
-    </div>
-    <script>
-        mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';
-        var coordinates = document.getElementById('coordinates');
-        var map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-96, 37.8],
-            zoom: 3
-        });
-        
-    </script>
+                        </div>
+                    </div>
+                </div>
 
+            </div>
+
+            <script>
+                mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';
+                var coordinates = document.getElementById('coordinates');
+                var map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/jgrizos/ckn363vkg0gf517mpg45zroq1',
+                    center: [-75.2437, 39.8729],
+                    zoom: 10
+                });
+
+            </script>
+            <div id="VirtualKey" style="position: fixed;left: 1050px;bottom: 220px;">
+
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M1" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M2" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M3" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M4" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
+                    value="CON" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
+                    value="MAP" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M5" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M6" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M7*" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M8" onclick="input(this);" />
+                <br />
+
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M9" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M10" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M11" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M12" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
+                    value="TRK" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
+                    value="USR" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M13" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M14" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M15*" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="M16" onclick="input(this);" />
+
+                <br />
+                <input id="btnClear" type="button" style="background-color:yellow;color:black;width:70px; height:30px;"
+                    value="Clear" onclick="Clear();" />
+                <input id="btnDel" type="button" style="background-color:yellow;color:black;width:100px; height:30px;"
+                    value="Back Space" onclick="del();" />
+                <input id="btnSpace" type="button" style="background-color:yellow;color:black;width:185px; height:30px;"
+                    value="Space" onclick="space();" />
+                <input id="btnEnter" type="button" style="background-color:red;color:black;width:70px; height:30px;"
+                    value="Enter" onclick="Enter();" />
+                <br />
+
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="INITCTRL" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="TRKRPOS" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="TRKSUSP" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="TERMCTRL" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="HNDOFF" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="FLTDATA" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="MULTIFUNC" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F8" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
+                    value="EMR" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
+                    value="." onclick="input(this);" />
+                <br />
+
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F9" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F10" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="CA" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F12" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F13" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F14" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="TGTGEN" onclick="space();" />
+                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
+                    value="F16" onclick="Clear();" />
+                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
+                    value="IFR*" onclick="del();" />
+                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
+                    value="VFR/" onclick="input(this);" />
+
+                <div id="Alpha">
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" value="A"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" value="B"
+                        onclick="input(this);" />
+                    <input id="btnAlphaC" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" value="C"
+                         /> 
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" value="D"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="E"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="F"
+                        onclick="input(this);" />
+                    <input id="btnAlphaG" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="G"
+                        onclick=inputKey();" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="1"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="2"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="3"
+                        onclick="input(this);" />
+                    <br />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="H"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="I"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="J"
+                        onclick="input(this)" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="K"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="L"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="M"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="N"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="4"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="5"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="6"
+                        onclick="input(this);" />
+                    <br />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="O"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="P"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="Q"
+                        onclick="input(this)" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="R"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="S"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="T"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="U"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="7"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="8"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="9"
+                        onclick="input(this);" />
+                    <br />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="V"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="W"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="X"
+                        onclick="input(this)" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="Y"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="Z"
+                        onclick="input(this);" />
+                    <input id="btnAlpha" type="button"
+                        style="background-color:white;color:black;width:40px; height:40px;" Value="."
+                        onclick="input(this);" />
+                    <input id="btn1" type="button" style="width:40px; height:40px;" onclick="input(this);" />
+                    <input id="btnnum" type="button" style="width:40px; height:40px;" onclick="input(this);" />
+                    <input id="btnnum" type="button"
+                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="0"
+                        onclick="input(this);" />
+                    <input id="btnnum" type="button" style="width:40px; height:40px;" onclick="input(this);" />
+                </div>
+
+            </div>
 </body>
 
 </html>

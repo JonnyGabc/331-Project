@@ -7,7 +7,8 @@ module.exports=async function dataQuery(airportName) {
         var dbo = database.db("331DB");
         let searchQuery = {"airportName":airportName}
         await dbo.collection("airport_data").findOne(searchQuery)
-          .then(  result=> { 
+          .then( result=> { 
+            console.log(result)
             resolve({Success:true, Message:result})            
           })   
           .catch(err=>{

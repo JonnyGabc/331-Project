@@ -30,6 +30,7 @@ app.use('/javascripts', express.static(path.join(__dirname, 'public/javascripts'
 app.use('/stylesheets', express.static(path.join(__dirname, 'public/stylesheets')));
 
 
+
 app.use('/', indexRouter);
 
 
@@ -54,9 +55,10 @@ app.get('/airportData', function (req, res) {
 })
 
 
-app.get('/airportByName', function (req, res) {
+app.post('/airportByName', function (req, res) {
   getAirportByName(req.body.airportName)
     .then(result => {
+      console.log(result)
       res.send(result)
     })
     .catch(err => {
@@ -64,7 +66,8 @@ app.get('/airportByName', function (req, res) {
     })
 })
 
-app.get('/airplaneByFlightPlan', function (req, res) {
+app.post('/airplaneByFlightPlan', function (req, res) {
+  console.log(req.body.flightPlan)
   getAirplaneByFlightPlan(req.body.flightPlan)
     .then(result => {
       res.send(result)
