@@ -271,54 +271,54 @@ map.on('load', function () {
         'data': point5
     });
 
-    map.addLayer({
-        'id': 'route1',
-        'source': 'route1',
-        'type': 'line',
-        'paint': {
-            'line-width': 2,
-            'line-color': '#007cbf'
-        }
-    });
+    // map.addLayer({
+    //     'id': 'route1',
+    //     'source': 'route1',
+    //     'type': 'line',
+    //     'paint': {
+    //         'line-width': 2,
+    //         'line-color': '#007cbf'
+    //     }
+    // });
 
-    map.addLayer({
-        'id': 'route2',
-        'source': 'route2',
-        'type': 'line',
-        'paint': {
-            'line-width': 2,
-            'line-color': '#007cbf'
-        }
-    });
-    map.addLayer({
-        'id': 'route3',
-        'source': 'route3',
-        'type': 'line',
-        'paint': {
-            'line-width': 2,
-            'line-color': '#007cbf'
-        }
-    });
+    // map.addLayer({
+    //     'id': 'route2',
+    //     'source': 'route2',
+    //     'type': 'line',
+    //     'paint': {
+    //         'line-width': 2,
+    //         'line-color': '#007cbf'
+    //     }
+    // });
+    // map.addLayer({
+    //     'id': 'route3',
+    //     'source': 'route3',
+    //     'type': 'line',
+    //     'paint': {
+    //         'line-width': 2,
+    //         'line-color': '#007cbf'
+    //     }
+    // });
 
-    map.addLayer({
-        'id': 'route4',
-        'source': 'route4',
-        'type': 'line',
-        'paint': {
-            'line-width': 2,
-            'line-color': '#007cbf'
-        }
-    });
+    // map.addLayer({
+    //     'id': 'route4',
+    //     'source': 'route4',
+    //     'type': 'line',
+    //     'paint': {
+    //         'line-width': 2,
+    //         'line-color': '#007cbf'
+    //     }
+    // });
 
-    map.addLayer({
-        'id': 'route5',
-        'source': 'route5',
-        'type': 'line',
-        'paint': {
-            'line-width': 2,
-            'line-color': '#007cbf'
-        }
-    });
+    // map.addLayer({
+    //     'id': 'route5',
+    //     'source': 'route5',
+    //     'type': 'line',
+    //     'paint': {
+    //         'line-width': 2,
+    //         'line-color': '#007cbf'
+    //     }
+    // });
 
     map.addLayer({
         'id': 'point1',
