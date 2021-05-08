@@ -14,6 +14,8 @@
     <script src="javascripts/fetchAirplaneByFP.js"></script>
     <script src="javascripts/fetchAirplaneData.js"></script>
     <script src="javascripts/fetchAirportData.js"></script>
+    <script src="javascripts/generateFlightStrip.js"></script>
+
     <style>
         @import url("stylesheets/textbox.css");
 
@@ -135,10 +137,13 @@
         // fetchAirportData()
 
     })
-    function inputKey(){        
-        document.getElementById("airplaneInText").placeholder='G'
+    function clearButton() {
+        document.getElementById('airplaneInText').value = ""
     }
-document.getElementById('btnAlphaG').addEventListener("click",inputKey)
+    function inputKey(keyValue) {
+        document.getElementById("airplaneInText").value = document.getElementById("airplaneInText").value + keyValue
+    }
+
 </script>
 
 <body>
@@ -182,7 +187,7 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
     <div class="flex-container" id="wrapper">
         <div class="flex-container" id="leftBox">
             <div>
-                <input type="text" name="search" placeholder="Search.." id="airplaneInText">
+                <input type="text" name="search" placeholder="" id="airplaneInText" value="">
                 <div class="overlay">
                     <button type="button" class="btn btn-primary" id='airplaneSearchButton'>Search</button>
                     <script>document.getElementById('airplaneSearchButton').addEventListener("click", getAirplane)</script>
@@ -192,36 +197,155 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
             <div class="flex-container" id="leftBoxText">
                 <div id="airplaneLabels" style="display: inline;">
                     <div class="table" id="leftTable">
-                        <div class="tr">
-                            <!-- <span class="th">CALL SIGN</span> -->
-                            <span class="th">AIRPLANES </span>
-                            <!-- <span class="th">FLIGHT PLAN </span>
+
+                        <head>
+                            <style>
+                                table,
+                                th,
+                                td {
+                                    border: 1px solid black;
+                                    border-collapse: collapse;
+                                }
+
+                                td {
+                                    padding: 15px;
+                                }
+                            </style>
+                        </head>
+
+                        <body>
+
+                            <h2>Flight Strip</h2>
+
+                            <table style="width:500px;height:100px;background-color: lightgreen; "
+                                id="airplaneInputData2" hidden=true>
+                                <tr style="color:lightsalmon">
+                                    <th>Call Sign</th>
+                                    <th>SAQuake</th>
+                                    <th>Dep Airport </th>
+                                    <th>Complete Route</th>
+
+                                </tr>
+
+                                <td style="height: 50px;"><input class='callSignText' value="AB9322"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+
+
+                                <td style="height: 25px;"><input class='SAQuakeText' value="0"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+                                <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="PHL"
+                                        style="background-color: lightgreen; border: 0px none;">
+                                </td>
+                                <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
+                                        value="APT2FIX2FIX3AWY2FIX4APT3"
+                                        style="background-color: lightgreen; border: 0px none;"> </td>
+
+                                <tr style="color:lightsalmon">
+
+                                    <th>AirCraft Type</th>
+                                    <th>Proposed Time</th>
+
+                                </tr>
+                                <td style="height: 50px;"><input class='aircraftTypeText' value="C143/S"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+                                <td style="height: 50px;"> <input class='proposedTimeText' value="A0120"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+
+                                <tr style="color:lightsalmon">
+                                    <th>Flight Plan</th>
+                                    <th>Req Altitude</th>
+                                    <th>Remarks</th>
+                                </tr>
+                                <td style="height: 50px;"><input class='flightPlanText' value="423"
+                                        style="background-color: lightgreen; border: 0px none;"> </td>
+                                <td style="height: 50px;"> <input class='reqAltitudeText' value="10000"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+                                <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+
+
+                            </table>
+
+                            <table style="width:500px;height:100px;background-color: lightgreen; "
+                                id="airplaneInputData" hidden=true>
+                                <tr style="color:lightsalmon">
+                                    <th>Call Sign</th>
+                                    <th>SAQuake</th>
+                                    <th>Dep Airport </th>
+                                    <th>Complete Route</th>
+
+                                </tr>
+
+                                <td style="height: 50px;"><input class='callSignText' value="N99322"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+
+
+                                <td style="height: 50px;"><input class='SAQuakeText' value="3177"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+                                <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="PHL"
+                                        style="background-color: lightgreen; border: 0px none;">
+                                </td>
+                                <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
+                                        value="APT2FIX2FIX3AWY2FIX4APT3"
+                                        style="background-color: lightgreen; border: 0px none;"> </td>
+
+                                <tr style="color:lightsalmon">
+
+                                    <th>AirCraft Type</th>
+                                    <th>Proposed Time</th>
+
+                                </tr>
+                                <td style="height: 50px;"><input class='aircraftTypeText' value="C143/S"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+                                <td style="height: 50px;"> <input class='proposedTimeText' value="A0120"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+
+                                <tr style="color:lightsalmon">
+                                    <th>Flight Plan</th>
+                                    <th>Req Altitude</th>
+                                    <th>Remarks</th>
+                                </tr>
+                                <td style="height: 50px;"><input class='flightPlanText' value="423"
+                                        style="background-color: lightgreen; border: 0px none;"> </td>
+                                <td style="height: 50px;"> <input class='reqAltitudeText' value="10000"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+                                <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
+                                        style="background-color: lightgreen; border: 0px none;"></td>
+
+
+                            </table>
+
+
+                            <div class="tr">
+                                <!-- <span class="th">CALL SIGN</span> -->
+                                <!-- <span class="th">AIRPLANES </span> -->
+                                <!-- <span class="th">FLIGHT PLAN </span>
                             <span class="th">REQUIRED ALTITUDE </span>
                             <span class="th">DEPARTMENT AIRPORT</span>
                             <span class="th">ARRIVING AIRPORT</span> -->
-                        </div>
-                        <div class="tr" id="airplaneInputData" style="display: none">
-                            <label style="white-space: nowrap; display: inline;">Call Sign</label><br><input
-                                class="callSign" placeholder='1' style="margin-left: 15px;"></span><br>
-                            <label style="display: inline;">Aircraft Type</label><br><input class="aircraftType"
-                                style="margin-left: 15px;"></span><br>
-                            <label style="display: inline;">Flight Plan</label><br><input class="flightPlan"
-                                placeholder='1' style="margin-left: 15px;"></span><br>
-                            <label style="white-space: nowrap; display: inline;">Required Altitude</label><br><input
-                                class="requiredAltitude" placeholder='1' style="margin-left: 15px;"></span><br>
-                            <label style="display: inline;">DepartMent Airport</label><br><input
-                                class="departmentAirport" placeholder='1' style="margin-left: 15px;"></span><br>
-                            <label style="display: inline;">Arriving Airport</label><br><input placeholder='6'
-                                class="arrivingAirport" placeholder='1' style="margin-left: 15px;"></span><br>
-                            <div class="td">
-                                <input type="image" src="./images/view-record-icon.svg" class="action-icon"
-                                    name="submit" alt="Submit search query">
-                                <input type="image" src="./images/edit-record-icon.svg" class="action-icon"
-                                    name="submit" alt="Submit search query">
-                                <input type="image" src="./images/delete-record-icon.svg" class="action-icon"
-                                    name="submit" alt="Submit search query">
                             </div>
-                        </div>
+                            <!-- <div class="tr" id="airplaneInputData" style="display: none">
+                                <label style="white-space: nowrap; display: inline;">Call Sign</label><br><input
+                                    class="callSign" placeholder='1' style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Aircraft Type</label><br><input class="aircraftType"
+                                    style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Flight Plan</label><br><input class="flightPlan"
+                                    placeholder='1' style="margin-left: 15px;"></span><br>
+                                <label style="white-space: nowrap; display: inline;">Required Altitude</label><br><input
+                                    class="requiredAltitude" placeholder='1' style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">DepartMent Airport</label><br><input
+                                    class="departmentAirport" placeholder='1' style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Arriving Airport</label><br><input placeholder='6'
+                                    class="arrivingAirport" placeholder='1' style="margin-left: 15px;"></span><br>
+                                <div class="td">
+                                    <input type="image" src="./images/view-record-icon.svg" class="action-icon"
+                                        name="submit" alt="Submit search query">
+                                    <input type="image" src="./images/edit-record-icon.svg" class="action-icon"
+                                        name="submit" alt="Submit search query">
+                                    <input type="image" src="./images/delete-record-icon.svg" class="action-icon"
+                                        name="submit" alt="Submit search query">
+                                </div>
+                            </div> -->
 
                     </div>
                 </div>
@@ -229,7 +353,9 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
                 <div id="airplaneData">
 
                 </div>
+
             </div>
+            <button type="button" class="btn btn-primary" id='airplaneSearchButton'>Save</button>
         </div>
         <div id="map" style="display:flex; flex-wrap:nowrap"></div>
         <div class="overlay">
@@ -242,6 +368,7 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
                 <input type="text" name="search" placeholder="Search.." id="airportSearch">
             </form>
             <div class="flex-container" id="rightBoxText">
+
                 <div>
                     <div id="airportLabels" style="display: inline;">
                         <div class="table" id="rightTable">
@@ -251,10 +378,10 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
                             <div id=airportInputData>
                                 <label style="white-space: nowrap; display: inline;">Airport</label><br><input
                                     class="airportName" placeholder='PHL' style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Latitude</label><br><input class="lat" placeholder='39.87.29'
-                                    style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Longitude</label><br><input class="long" placeholder='-75.2437'
-                                    style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Latitude</label><br><input class="lat"
+                                    placeholder='39.87.29' style="margin-left: 15px;"></span><br>
+                                <label style="display: inline;">Longitude</label><br><input class="long"
+                                    placeholder='-75.2437' style="margin-left: 15px;"></span><br>
                                 <div class="td">
                                     <input type="image" src="./images/view-record-icon.svg" class="action-icon"
                                         name="submit" alt="Submit search query">
@@ -325,13 +452,13 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
 
                 <br />
                 <input id="btnClear" type="button" style="background-color:yellow;color:black;width:70px; height:30px;"
-                    value="Clear" onclick="Clear();" />
+                    value="Clear" onclick="clearButton();" />
                 <input id="btnDel" type="button" style="background-color:yellow;color:black;width:100px; height:30px;"
                     value="Back Space" onclick="del();" />
                 <input id="btnSpace" type="button" style="background-color:yellow;color:black;width:185px; height:30px;"
                     value="Space" onclick="space();" />
                 <input id="btnEnter" type="button" style="background-color:red;color:black;width:70px; height:30px;"
-                    value="Enter" onclick="Enter();" />
+                    value="Enter" onclick="createFlightStrip();" />
                 <br />
 
                 <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
@@ -380,112 +507,112 @@ document.getElementById('btnAlphaG').addEventListener("click",inputKey)
                 <div id="Alpha">
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" value="A"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" value="B"
-                        onclick="input(this);" />
-                    <input id="btnAlphaC" type="button"
+                        onclick="inputKey(this.value);" />
+                    <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" value="C"
-                         /> 
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" value="D"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="E"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="F"
-                        onclick="input(this);" />
-                    <input id="btnAlphaG" type="button"
+                        onclick="inputKey(this.value);" />
+                    <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="G"
-                        onclick=inputKey();" />
+                        onclick=inputKey(this.value); />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="1"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="2"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="3"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <br />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="H"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="I"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="J"
-                        onclick="input(this)" />
+                        onclick="inputKey(this.value)" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="K"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="L"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="M"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="N"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="4"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="5"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="6"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <br />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="O"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="P"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="Q"
-                        onclick="input(this)" />
+                        onclick="inputKey(this.value)" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="R"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="S"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="T"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="U"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="7"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="8"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnnum" type="button"
                         style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="9"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <br />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="V"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="W"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="X"
-                        onclick="input(this)" />
+                        onclick="inputKey(this.value)" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="Y"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="Z"
-                        onclick="input(this);" />
+                        onclick="inputKey(this.value);" />
                     <input id="btnAlpha" type="button"
                         style="background-color:white;color:black;width:40px; height:40px;" Value="."
                         onclick="input(this);" />
