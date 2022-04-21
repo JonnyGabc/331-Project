@@ -13,37 +13,37 @@ async function fetchAirplaneData() {
                 localStorage.setItem("airplanes",JSON.stringify(airPlaneDataObj.Message))  
                 console.log(localStorage.getItem('airplanes'))           
                 airPlaneDataObj.Message.forEach(element => {                    
-                    // let text = document.getElementById("airplaneInputData").cloneNode(true)  
-                    // text.style.display="";
-                    // for(var i=0; i< text.childNodes.length;i++){
+                    let text = document.getElementById("airplaneInputData").cloneNode(true)  
+                    text.style.display="";
+                    for(var i=0; i< text.childNodes.length;i++){
                         
-                    //     if(text.childNodes[i].className =="callSign")
-                    //     {                            
-                    //         text.childNodes[i].placeholder = element.callSign                            
-                    //     }
-                    //     if(text.childNodes[i].className =="aircraftType")
-                    //     {
-                    //         text.childNodes[i].placeholder = element.aircraftType
-                    //     }
-                    //     if(text.childNodes[i].className =="flightPlan")
-                    //     {
-                    //         text.childNodes[i].placeholder = element.flightPlan
-                    //     }
-                    //     if(text.childNodes[i].className =="requiredAltitude")
-                    //     {
-                    //         text.childNodes[i].placeholder = element.requiredAltitude
-                    //     }
-                    //     if(text.childNodes[i].className =="departmentAirport")
-                    //     {
-                    //         text.childNodes[i].placeholder = element.departmentAirport
-                    //     }
-                    //     if(text.childNodes[i].className =="arrivingAirport")
-                    //     {
-                    //         text.childNodes[i].placeholder = element.arrivingAirport
-                    //     }
-                    // }              
+                        if(text.childNodes[i].className =="callSign")
+                        {                            
+                            text.childNodes[i].placeholder = element.callSign                            
+                        }
+                        if(text.childNodes[i].className =="aircraftType")
+                        {
+                            text.childNodes[i].placeholder = element.aircraftType
+                        }
+                        if(text.childNodes[i].className =="flightPlan")
+                        {
+                            text.childNodes[i].placeholder = element.flightPlan
+                        }
+                        if(text.childNodes[i].className =="requiredAltitude")
+                        {
+                            text.childNodes[i].placeholder = element.requiredAltitude
+                        }
+                        if(text.childNodes[i].className =="departmentAirport")
+                        {
+                            text.childNodes[i].placeholder = element.departmentAirport
+                        }
+                        if(text.childNodes[i].className =="arrivingAirport")
+                        {
+                            text.childNodes[i].placeholder = element.arrivingAirport
+                        }
+                    }              
                     
-                    // document.getElementById('leftTable').appendChild(text)
+                    document.getElementById('leftTable').appendChild(text)
                 });
             // })
             }
