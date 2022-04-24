@@ -43,7 +43,7 @@
 
             });
 
-            var speed = 3;
+            var speed = 6;
             var outerCounter = 0;
 
             async function createMarkers(Lat, Long, flightDiv, altDiv) {
@@ -55,8 +55,9 @@
                 });
                 return markerHtml;
             }
-            const marker1 = await createMarkers(40.695213, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">1</b>`)
-            const marker2 = await createMarkers(40.68, -74.17, `<b id="plane">Plane</b>`, `<b id="plane">2</b>`)
+            //create markers
+            const marker1 = await createMarkers(40.695213, -74.184601, `<b id="plane">N99322<br> 012    17C</b>`, `<b id="plane">N99322<br> 012    17C</b>`)
+            const marker2 = await createMarkers(40.68, -74.17, `<b id="plane">N99322 <br> VCN   *B350</b>`, `<b id="plane">2</b>`)
 
 
 
@@ -69,17 +70,19 @@
                 speed = 0;
             }
 
-
-            animateMarker(marker1, `<b id="plane">Plane</b>`, `<b id="plane">1</b>`, [.0001, .0001], "plane 1");
-            animateMarker(marker2, `<b id="plane">Plane</b>`, `<b id="plane">2</b>`, [.0001, -.0001], "plane 2");
+            //<br> <b style="font-size: 30px;">.</b>
+            //animate marker
+            animateMarker(marker1, `<b id="plane">N99322 <br> JFK   *B350 </b>`, `<b id="plane">N99322<br> 012    17C </b>`, [.0001, .0001], "plane 1");
+            animateMarker(marker2, `<b id="plane">AB9322 <br> PHL   *C143</b>`, `<b id="plane">AB9322 <br> 090    20C</b>`, [.0001, -.0001], "plane 2");
+            
             setTimeout(async() => {
                 const marker3 = await createMarkers(40.695213, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">3</b>`)
-                animateMarker(marker3, `<b id="plane">Plane</b>`, `<b id="plane">3</b>`, [.0001, -.0001], "plane 3");
+                animateMarker(marker3, `<b id="plane">M32413 <br> *M142</b>`, `<b id="plane">M32413 <br> 120    18C</b>`, [.0001, -.0001], "plane 3");
             }, 40000/speed);
 
             setTimeout(async() => {
                 const marker4 = await createMarkers(40.705213, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">4</b>`)
-                animateMarker(marker4, `<b id="plane">Plane</b>`, `<b id="plane">4</b>`, [-.0002, 0], "plane 4");
+                animateMarker(marker4, `<b id="plane">E2432 <br>TPA *M132</b>`, `<b id="plane">E2432 <br> 180    22C</b>`, [-.0002, 0], "plane 4");
             }, 20000/speed);
 
             // if (outerCounter == 100) {
