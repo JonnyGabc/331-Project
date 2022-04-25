@@ -88,7 +88,11 @@ app.post('/updateAirplane', function (req, res) {
 })
 
 app.get('/test', function (req, res) {
-  res.sendFile(path.join(__dirname, './public/index2.html'));
+  res.sendFile(path.join(__dirname, './public/test.html'));
+})
+
+app.get('/left', function (req, res) {
+  res.sendFile(path.join(__dirname, './public/leftBox.html'));
 })
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

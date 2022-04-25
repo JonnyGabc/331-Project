@@ -1,0 +1,147 @@
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb0DiPoQQKkRvD0Iz3ey9DjXforeSt6qw&callback=initMap" async
+    defer></script>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<title>Simple Map</title>
+<meta name="viewport" content="initial-scale=1.0">
+<meta charset="utf-8">
+<style>
+    /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+    #map {
+        position: relative;
+        text-align: center;
+        height: 70%;
+
+    }
+
+    /* Optional: Makes the sample page fill the window. */
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #plane {
+        color: white;
+    }
+</style>
+
+<body>
+    <div id="map" style="width: 70%; float: left;"></div>
+    <script src="htmlMarker.js"></script>
+    <script>
+
+        var map;
+        async function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                mapId: "94f65880206b7e9a",
+                center: { lat: 40.695213, lng: -74.184601 },
+                zoom: 16
+
+            });
+
+            var speed = 6;
+            var outerCounter = 0;
+
+            async function createMarkers(Lat, Long, flightDiv, altDiv) {
+                const latLng = new google.maps.LatLng(Lat, Long);
+                var markerHtml = await createHTMLMapMarker({
+                    latlng: latLng,
+                    map: map,
+                    html: `<b id="plane">Plane</b>`
+                });
+                return markerHtml;
+            }
+            //create markers
+            const marker1 = await createMarkers(40.695213, -74.184601, `<b id="plane">N99322<br> 012    17C</b>`, `<b id="plane">N99322<br> 012    17C</b>`)
+            const marker2 = await createMarkers(40.68, -74.17, `<b id="plane">N99322 <br> VCN   *B350</b>`, `<b id="plane">2</b>`)
+
+
+
+            var changePath = false;
+            const element = document.getElementById("switch_path");
+            element.addEventListener("click", myFunction);
+
+            function myFunction() {
+                changePath = true;
+                speed = 0;
+            }
+
+            //<br> <b style="font-size: 30px;">.</b>
+            //animate marker
+            animateMarker(marker1, `<b id="plane">N99322 <br> JFK   *B350 </b>`, `<b id="plane">N99322<br> 012    17C </b>`, [.0001, .0001], "plane 1");
+            animateMarker(marker2, `<b id="plane">AB9322 <br> PHL   *C143</b>`, `<b id="plane">AB9322 <br> 090    20C</b>`, [.0001, -.0001], "plane 2");
+            
+            setTimeout(async() => {
+                const marker3 = await createMarkers(40.695213, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">3</b>`)
+                animateMarker(marker3, `<b id="plane">M32413 <br> *M142</b>`, `<b id="plane">M32413 <br> 120    18C</b>`, [.0001, -.0001], "plane 3");
+            }, 40000/speed);
+
+            setTimeout(async() => {
+                const marker4 = await createMarkers(40.705213, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">4</b>`)
+                animateMarker(marker4, `<b id="plane">E2432 <br>TPA *M132</b>`, `<b id="plane">E2432 <br> 180    22C</b>`, [-.0002, 0], "plane 4");
+            }, 20000/speed);
+
+            // if (outerCounter == 100) {
+            //     const marker4 = await createMarkers(40.695213, -74.183601, `<b id="plane">Plane</b>`, `<b id="plane">4</b>`)
+            //     animateMarker(marker4, `<b id="plane">Plane</b>`, `<b id="plane">3</b>`, [-.0002, 0], "plane 4");
+            // }
+
+
+            async function animateMarker(marker, divOne, divTwo, direction, plane) {
+
+                animateCircle(marker);
+
+
+                // Use the DOM setInterval() function to change the offset of the symbol
+                // at fixed intervals.
+                function animateCircle(marker) {
+                    var innerCounter = 0;
+                    window.setInterval(() => {
+
+                        console.log(marker.getPosition().lng())
+                        console.log(marker.getPosition().lat())
+                        if (plane !== "plane 1" && Math.round(marker.getPosition().lng() * 10000) / 10000 == Math.round(-74.182701 * 10000) / 10000) {
+                            return
+                        }
+                        if (!changePath || plane !== "plane 1") {
+                            //marker.setPosition({ lat: marker.getPosition().lat() + .0001, lng: marker.getPosition().lng() + .0001 })
+                            var latLng = new google.maps.LatLng(marker.getPosition().lat() + direction[0], marker.getPosition().lng() + direction[1]);
+                            marker.latlng = latLng;
+
+
+                        }
+                        if (changePath && plane === "plane 1") {
+                            //marker.setPosition({ lat: marker.getPosition().lat() - .0001, lng: marker.getPosition().lng() + .0001 })
+                            var latLng = new google.maps.LatLng(marker.getPosition().lat() - direction[0], marker.getPosition().lng() + direction[1]);
+                            marker.latlng = latLng;
+
+                        }
+
+                        if (innerCounter % 2 == 0) {
+                            marker.html = divOne;
+                            marker.remove();
+                        }
+                        if (innerCounter % 2 != 0) {
+                            marker.html = divTwo;
+                            marker.remove();
+                        }
+                        map.setZoom(map.getZoom());
+                        innerCounter++;
+                        outerCounter++;
+
+                    }, 1000 / speed);
+                }
+            }
+        }
+
+    </script>
+    <button id="switch_path"></button>
+
+</body>
+<script>
+
+</script>

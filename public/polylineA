@@ -1,0 +1,40 @@
+const lineSymbol = {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                strokeColor: "#999",
+                label:{ color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Your text here' }
+            };
+           
+            
+            // Create the polyline and add the symbol to it via the 'icons' property.
+            const line = new google.maps.Polyline({
+                path: [
+                    { lat: 40.695213, lng: -74.184601 },
+                    { lat: 41.695213, lng: -75.184601 },
+                ],
+                icons: [
+                    {
+                        icon: lineSymbol,
+                        offset: "100%",
+                    },
+                ],
+                map: map,
+            });
+
+            animateCircle(line);
+
+
+            // Use the DOM setInterval() function to change the offset of the symbol
+            // at fixed intervals.
+            function animateCircle(line) {
+                let count = 0;
+
+                window.setInterval(() => {
+                    count = (count + .01) % 200;
+
+                    const icons = line.get("icons");
+
+                    icons[0].offset = count / 2 + "%";
+                    line.set("icons", icons);
+                }, 20);
+            }

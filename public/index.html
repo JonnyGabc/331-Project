@@ -1,630 +1,853 @@
-<!DOCTYPE html>
-<html>
+<div class="html">
 
-<head>
-    <meta charset="utf-8">
-    <title>FAA Flight Simulator</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
-    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <script src="javascripts/fetchAirportByName.js"></script>
-    <script src="javascripts/displayAirplanes.js"></script>
-    <script src="javascripts/fetchAirplaneByFP.js"></script>
-    <script src="javascripts/fetchAirplaneData.js"></script>
-    <script src="javascripts/fetchAirportData.js"></script>
-    <script src="javascripts/generateFlightStrip.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+            integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+
+    </head>
+
+
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Simple Map</title>
 
     <style>
-        @import url("stylesheets/textbox.css");
-
-        .flex-container {
-            display: flex;
-            flex-wrap: nowrap;
-            background-color: lightblue;
+        #timebar {
+            text-align: center;
         }
 
-        #wrapper {
-            border-style: inset;
-            width: auto;
-            height: auto;
-            margin: 25px;
-            justify-content: left;
-
+        .clockStyle {
+            font-size: 20px;
+            color: #ff0000;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
+        #clock {
+            text-align: center;
+            margin: 10px 0 0 0;
+        }
+
+        #output {
+            text-align: center;
+            background-color: black;
+            border: 10px;
+            border-color: yellow;
         }
 
         #map {
-            border-style: inset;
-            width: 900px;
-            height: 600px;
-            margin: auto;
-            margin-top: 100px;
-            margin-bottom: 100px;
+            width: 100%;
+            height: 1200px;
+
         }
 
-        #leftBox {
-            position: relative;
-            width: 600px;
-            height: 1000px;
-            border-style: inset;
-            margin: auto;
-            margin-left: 50px;
-            margin-top: 50px;
-            margin-bottom: 50px;
-            overflow: hidden;
+
+
+        /* Optional: Makes the sample page fill the window. */
+        html {
+            background-color: gray;
         }
 
-        #rightBox {
-            position: relative;
-            width: 600px;
-            height: 1000px;
-            border-style: inset;
-            margin: auto;
-            margin-right: 50px;
-            margin-top: 50px;
-            margin-bottom: 50px;
-            overflow: auto
+        body {
+            height: 100%;
+            margin: 1%;
+            background-image: url('http://localhost:8080/images/diamond-plate.jpg');
+            padding: .5%;
+            border-style: solid;
+            box-shadow: 1px 1px 5px #555 inset;
         }
 
-        #leftBoxText {
-            position: absolute;
-            left: 50px;
-            top: 75px;
-            width: 500px;
-            height: 600px;
-            max-width: 500px;
-            max-height: 600px;
-            border-style: inset;
-            margin: auto;
-            overflow: scroll
+        #plane {
+            color: white;
         }
 
-        #rightBoxText {
-            position: absolute;
-            left: 50px;
-            top: 75px;
-            width: 500px;
-            height: 600px;
-            max-width: 500px;
-            max-height: 600px;
-            border-style: inset;
-            margin: auto;
-            overflow: scroll
+        #time_row {
+            margin: 10px;
+            background-color: black;
+            display: inline;
         }
 
-        input[type=text] {
-            position: absolute;
-            top: 10px;
-            left: 50px;
-            width: 130px;
-            box-sizing: border-box;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            background-color: white;
-            background-image: url('searchicon.png');
-            background-position: 10px 10px;
-            background-repeat: no-repeat;
-            padding: 12px 20px 12px 40px;
-            transition: width 0.4s ease-in-out;
-        }
-
-        input[type=text]:focus {
-            width: 55%;
-        }
-
-        .btn-primary {
-            background-color: teal;
-            position: fixed;
-            left: 530px;
-            top: 93px;
-        }
-    </style>
-</head>
-<script>
-    window.onload = (function () {
-
-        fetchAirplaneData()
-        airplaneAnimation(1, 1)
-        // airplaneAnimation(1,2)
-
-        // fetchAirportData()
-
-    })
-    function clearButton() {
-        document.getElementById('airplaneInText').value = ""
-    }
-    function inputKey(keyValue) {
-        document.getElementById("airplaneInText").value = document.getElementById("airplaneInText").value + keyValue
-    }
-
-</script>
-
-<body>
-    <style>
-        .coordinates {
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            position: absolute;
-            bottom: 40px;
-            left: 10px;
-            padding: 5px 10px;
-            margin: 0;
-            font-size: 11px;
-            line-height: 18px;
-            border-radius: 3px;
+        #play-pause {
             display: none;
         }
 
-        .overlay {
-            position: relative;
-            top: 50px;
-            right: 150px;
-        }
-
-        .overlay button {
-            font: 600 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-            background-color: #3386c0;
-            color: #fff;
-            display: inline-block;
-            margin: 0;
-            padding: 10px 20px;
-            border: none;
+        label {
             cursor: pointer;
-            border-radius: 3px;
         }
 
-        .overlay button:hover {
-            background-color: #4ea0da;
+        #play-pause:checked+#play-pause-label::after {
+            content: '►';
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        #play-pause-label::after {
+            content: '❙❙';
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        #fast_forward {
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        #leftBoxStuff {
+            position: absolute;
+            overflow-y: scroll;
+            overflow-x: scroll;
         }
     </style>
-    <div class="flex-container" id="wrapper">
-        <div class="flex-container" id="leftBox">
-            <div>
-                <input type="text" name="search" placeholder="" id="airplaneInText" value="">
-                <div class="overlay">
-                    <button type="button" class="btn btn-primary" id='airplaneSearchButton'>Search</button>
-                    <script>document.getElementById('airplaneSearchButton').addEventListener("click", getAirplane)</script>
-                </div>
-            </div>
 
-            <div class="flex-container" id="leftBoxText">
-                <div id="airplaneLabels" style="display: inline;">
-                    <div class="table" id="leftTable">
-
-                        <head>
-                            <style>
-                                table,
-                                th,
-                                td {
-                                    border: 1px solid black;
-                                    border-collapse: collapse;
-                                }
-
-                                td {
-                                    padding: 15px;
-                                }
-                            </style>
-                        </head>
-
-                        <body>
-
-                            <h2>Flight Strip</h2>
-
-                            <table style="width:500px;height:100px;background-color: lightgreen; "
-                                id="airplaneInputData2" hidden=true>
-                                <tr style="color:lightsalmon">
-                                    <th>Call Sign</th>
-                                    <th>SAQuake</th>
-                                    <th>Dep Airport </th>
-                                    <th>Complete Route</th>
-
-                                </tr>
-
-                                <td style="height: 50px;"><input class='callSignText' value="AB9322"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
+    <body>
 
 
-                                <td style="height: 25px;"><input class='SAQuakeText' value="0"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-                                <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="PHL"
-                                        style="background-color: lightgreen; border: 0px none;">
-                                </td>
-                                <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
-                                        value="APT2FIX2FIX3AWY2FIX4APT3"
-                                        style="background-color: lightgreen; border: 0px none;"> </td>
+        <div class="div">
+            <div class="row" class="time_row">
 
-                                <tr style="color:lightsalmon">
+                <div class="col-sm-1" id="timebar">
+                    <div id="clock" class="clockStyle"></div>
 
-                                    <th>AirCraft Type</th>
-                                    <th>Proposed Time</th>
+                    <div id="stopwatch" style="display: inline;" class="hide">
 
-                                </tr>
-                                <td style="height: 50px;"><input class='aircraftTypeText' value="C143/S"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-                                <td style="height: 50px;"> <input class='proposedTimeText' value="A0120"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-
-                                <tr style="color:lightsalmon">
-                                    <th>Flight Plan</th>
-                                    <th>Req Altitude</th>
-                                    <th>Remarks</th>
-                                </tr>
-                                <td style="height: 50px;"><input class='flightPlanText' value="423"
-                                        style="background-color: lightgreen; border: 0px none;"> </td>
-                                <td style="height: 50px;"> <input class='reqAltitudeText' value="10000"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-                                <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-
-
-                            </table>
-
-                            <table style="width:500px;height:100px;background-color: lightgreen; "
-                                id="airplaneInputData" hidden=true>
-                                <tr style="color:lightsalmon">
-                                    <th>Call Sign</th>
-                                    <th>SAQuake</th>
-                                    <th>Dep Airport </th>
-                                    <th>Complete Route</th>
-
-                                </tr>
-
-                                <td style="height: 50px;"><input class='callSignText' value="N99322"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-
-
-                                <td style="height: 50px;"><input class='SAQuakeText' value="3177"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-                                <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="PHL"
-                                        style="background-color: lightgreen; border: 0px none;">
-                                </td>
-                                <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
-                                        value="APT2FIX2FIX3AWY2FIX4APT3"
-                                        style="background-color: lightgreen; border: 0px none;"> </td>
-
-                                <tr style="color:lightsalmon">
-
-                                    <th>AirCraft Type</th>
-                                    <th>Proposed Time</th>
-
-                                </tr>
-                                <td style="height: 50px;"><input class='aircraftTypeText' value="C143/S"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-                                <td style="height: 50px;"> <input class='proposedTimeText' value="A0120"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-
-                                <tr style="color:lightsalmon">
-                                    <th>Flight Plan</th>
-                                    <th>Req Altitude</th>
-                                    <th>Remarks</th>
-                                </tr>
-                                <td style="height: 50px;"><input class='flightPlanText' value="423"
-                                        style="background-color: lightgreen; border: 0px none;"> </td>
-                                <td style="height: 50px;"> <input class='reqAltitudeText' value="10000"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-                                <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
-                                        style="background-color: lightgreen; border: 0px none;"></td>
-
-
-                            </table>
-
-
-                            <div class="tr">
-                                <!-- <span class="th">CALL SIGN</span> -->
-                                <!-- <span class="th">AIRPLANES </span> -->
-                                <!-- <span class="th">FLIGHT PLAN </span>
-                            <span class="th">REQUIRED ALTITUDE </span>
-                            <span class="th">DEPARTMENT AIRPORT</span>
-                            <span class="th">ARRIVING AIRPORT</span> -->
-                            </div>
-                            <!-- <div class="tr" id="airplaneInputData" style="display: none">
-                                <label style="white-space: nowrap; display: inline;">Call Sign</label><br><input
-                                    class="callSign" placeholder='1' style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Aircraft Type</label><br><input class="aircraftType"
-                                    style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Flight Plan</label><br><input class="flightPlan"
-                                    placeholder='1' style="margin-left: 15px;"></span><br>
-                                <label style="white-space: nowrap; display: inline;">Required Altitude</label><br><input
-                                    class="requiredAltitude" placeholder='1' style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">DepartMent Airport</label><br><input
-                                    class="departmentAirport" placeholder='1' style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Arriving Airport</label><br><input placeholder='6'
-                                    class="arrivingAirport" placeholder='1' style="margin-left: 15px;"></span><br>
-                                <div class="td">
-                                    <input type="image" src="./images/view-record-icon.svg" class="action-icon"
-                                        name="submit" alt="Submit search query">
-                                    <input type="image" src="./images/edit-record-icon.svg" class="action-icon"
-                                        name="submit" alt="Submit search query">
-                                    <input type="image" src="./images/delete-record-icon.svg" class="action-icon"
-                                        name="submit" alt="Submit search query">
-                                </div>
-                            </div> -->
-
+                        <p id='output' class="clockStyle"></p>
+                        <!-- <div id="controls">
+                            <ul>
+                                <li><button id="startPause" onclick="startPause()" class="btn">Start</button></li>
+                                <li><button onclick="reset()" class="btn">Reset</button></li>
+                            </ul>
+                        </div> -->
                     </div>
+
+
+                    <!-- <ul>
+                        <li><button id="clockBtn">Clock</button></li>
+                        <li><button id="stopwatchBtn">Stop Watch</button></li>
+                    </ul> -->
+                </div>
+                <div class="col-xsm-1" style="float: left;">
+                    <input type="checkbox" id="play-pause" onclick="startPause()" /><label for="play-pause"
+                        id="play-pause-label" class="win-button"></label>
+
+                </div>
+                <div class="col-xsm-1">
+                    <img src="./images/fastforward.png" onclick="changeSpeed(5)"
+                        style="height: 25px; width: 25px; margin-top: 15px; margin-left:10px;" alt="">
                 </div>
 
-                <div id="airplaneData">
-
-                </div>
 
             </div>
-            <button type="button" id='airplaneSearchButton' class='btn-primary' style="position: fixed; top:540px; right:150px">Save</button>
-        </div>
-        <div id="map" style="display:flex; flex-wrap:nowrap"></div>
-        <div class="overlay">
-            <button id="replay">Replay</button>
-        </div>
+            <div class="row body">
+                <div class="col-md-8">
+                    <div id="map"></div>
+                    <script src="htmlMarker.js"></script>
+                </div>
+                <div class="col-md-4">
+                    <div
+                        style="background-image: linear-gradient(white, grey); padding: 10px; border: 3px;border-style: solid;box-shadow: 1px 1px 5px #555 inset;">
+                        <div class="row">
+                            <div class="col-s-8">
 
-        <pre id="coordinates" class="coordinates"></pre>
-        <div class="flex-container" id="rightBox">
-            <form>
-                <input type="text" name="search" placeholder="Search.." id="airportSearch">
-            </form>
-            <div class="flex-container" id="rightBoxText">
-
-                <div>
-                    <div id="airportLabels" style="display: inline;">
-                        <div class="table" id="rightTable">
-                            <div class="tr">
-                                <span class="th">VIEWABLE AIRPORTS</span>
                             </div>
-                            <div id=airportInputData>
-                                <label style="white-space: nowrap; display: inline;">Airport</label><br><input
-                                    class="airportName" placeholder='PHL' style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Latitude</label><br><input class="lat"
-                                    placeholder='39.87.29' style="margin-left: 15px;"></span><br>
-                                <label style="display: inline;">Longitude</label><br><input class="long"
-                                    placeholder='-75.2437' style="margin-left: 15px;"></span><br>
-                                <div class="td">
-                                    <input type="image" src="./images/view-record-icon.svg" class="action-icon"
-                                        name="submit" alt="Submit search query">
+                            <div class="col-s-4">
+
+                            </div>
+                        </div>
+                        <h1>FLIGHT STRIPS</h1>
+                        <hr style="border-top: 3px double #000000;">
+                        <div class="row">
+                            <div class="col-md-12" style="padding: 15px;">
+                                <div style="height: 300px; overflow-y:auto;overflow-x:auto" id="flightStripBox">
+                                    <table
+                                        style="background-color: rgb(236, 238, 232);border: 2px; margin-bottom:10px; border-style: solid;box-shadow: 1px 1px 5px #555 inset;"
+                                        id="airplaneInputData2">
+                                        <tr style="color:black">
+                                            <th>Call Sign</th>
+                                            <th>SAQuake</th>
+                                            <th>Dep Airport </th>
+                                            <th>Complete Route</th>
+
+                                        </tr>
+
+                                        <td style="height: 50px;"><input class='callSignText' value="AB9322"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+
+
+                                        <td style="height: 25px;"><input class='SAQuakeText' value="0"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="PHL"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;">
+                                        </td>
+                                        <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
+                                                value="APT2FIX2FIX3AWY2FIX4APT3"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"> </td>
+
+                                        <tr style="color:black">
+
+                                            <th>AirCraft Type</th>
+                                            <th>Proposed Time</th>
+
+                                        </tr>
+                                        <td style="height: 50px;"><input class='aircraftTypeText' value="C143/S"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td style="height: 50px;"> <input class='proposedTimeText' value="A0120"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+
+                                        <tr style="color:black">
+                                            <th>Flight Plan</th>
+                                            <th>Req Altitude</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                        <td style="height: 50px;"><input class='flightPlanText' value="423"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"> </td>
+                                        <td style="height: 50px;"> <input class='reqAltitudeText' value="10000"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+
+
+
+                                    </table>
+
+
                                 </div>
                             </div>
+                        </div>
+                        <hr style="border-top: 3px double #000000;">
 
+                        <div class="row">
+                            <div class="col-md-7 " style="padding: 10px; left:200px;">
+                                <div id="VirtualKey"
+                                    style="border: 3px;border-style: solid;box-shadow: 1px 1px 5px #555 inset;">
+
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M1"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M2"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M3"
+                                        onclick="clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M4"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:white;color:black;width:40px; height:40px;" value="CON"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:white;color:black;width:40px; height:40px;" value="MAP"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M5"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M6"
+                                        onclick="clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M7*"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M8"
+                                        onclick="input(this);" />
+                                    <br />
+
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M9"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M10"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M11"
+                                        onclick="clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M12"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:white;color:black;width:40px; height:40px;" value="TRK"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:white;color:black;width:40px; height:40px;" value="USR"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M13"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M14"
+                                        onclick="clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M15*"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="M16"
+                                        onclick="input(this);" />
+
+                                    <br />
+                                    <input id="btnClear" type="button"
+                                        style="background-color:yellow;color:black;width:70px; height:30px;"
+                                        value="Clear" onclick="clear();" />
+                                    <input id="btnDel" type="button"
+                                        style="background-color:yellow;color:black;width:100px; height:30px;"
+                                        value="Back Space" onclick="deleteKey();" />
+                                    <input id="btnSpace" type="button"
+                                        style="background-color:yellow;color:black;width:185px; height:30px;"
+                                        value="Space" onclick="inputKey(' ');" />
+                                    <input id="btnEnter" type="button"
+                                        style="background-color:red;color:black;width:70px; height:30px;" value="Enter"
+                                        onclick="enter();" />
+                                    <br />
+
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="INITCTRL" onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="TRKRPOS" onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="TRKSUSP" onclick="clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="TERMCTRL" onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="HNDOFF" onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="FLTDATA" onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="MULTIFUNC" onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F8"
+                                        onclick="Clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:yellow;color:black;width:40px; height:40px;" value="EMR"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:yellow;color:black;width:40px; height:40px;" value="."
+                                        onclick="input(this);" />
+                                    <br />
+
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F9"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F10"
+                                        onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="CA"
+                                        onclick="Clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F12"
+                                        onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F13"
+                                        onclick="inputKey(' ');" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F14"
+                                        onclick="deleteKey();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;"
+                                        value="TGTGEN" onclick="space();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:green;color:black;width:40px; height:40px;" value="F16"
+                                        onclick="clear();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:yellow;color:black;width:40px; height:40px;"
+                                        value="IFR*" onclick="del();" />
+                                    <input id="btnG" type="button"
+                                        style="background-color:yellow;color:black;width:40px; height:40px;"
+                                        value="VFR/" onclick="input(this);" />
+
+                                    <div id="Alpha">
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            value="A" onclick="inputKey('A');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            value="B" onclick="inputKey('B');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            value="C" onclick="inputKey('C');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            value="D" onclick="inputKey('D');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="E" onclick="inputKey('E');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="F" onclick="inputKey('F');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="G" onclick="inputKey('G');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="1" onclick="inputKey('1');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="2" onclick="inputKey('2');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="3" onclick="inputKey('3');" />
+                                        <br />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="H" onclick="inputKey('H');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="I" onclick="inputKey('I');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="J" onclick="inputKey('J')" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="K" onclick="inputKey('K');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="L" onclick="inputKey('L');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="M" onclick="inputKey('M');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="N" onclick="inputKey('N');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="4" onclick="inputKey('4');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="5" onclick="inputKey('5');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="6" onclick="inputKey('6');" />
+                                        <br />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="O" onclick="inputKey('O');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="P" onclick="inputKey('P');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="Q" onclick="inputKey('Q')" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="R" onclick="inputKey('R');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="S" onclick="inputKey('S');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="T" onclick="inputKey('T');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="U" onclick="inputKey('U');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="7" onclick="inputKey(this.value);" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="8" onclick="inputKey('8');" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="9" onclick="inputKey('9');" />
+                                        <br />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="V" onclick="inputKey('V');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="W" onclick="inputKey('W');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="X" onclick="inputKey('X')" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="Y" onclick="inputKey('Y');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="Z" onclick="inputKey('Z');" />
+                                        <input id="btnAlpha" type="button"
+                                            style="background-color:white;color:black;width:40px; height:40px;"
+                                            Value="." onclick="input('.');" />
+                                        <input id="btn1" type="button" style="width:40px; height:40px;"
+                                            onclick="input(this);" />
+                                        <input id="btnnum" type="button" style="width:40px; height:40px;"
+                                            onclick="input(this);" />
+                                        <input id="btnnum" type="button"
+                                            style="background-color:lightskyblue;color:black;width:40px; height:40px;"
+                                            Value="0" onclick="inputKey('0');" />
+                                        <input id="btnnum" type="button" style="width:40px; height:40px;"
+                                            onclick="inputKey('0');" />
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <br>
+                    <div class="row">
+
+
+                        <div class="col-md-6"
+                            style="background-image: linear-gradient(grey, white);border: 3px;border-style: solid;box-shadow: 1px 1px 5px #555 inset; margin-bottom: 10px;">
+                            <div>
+                                <h1>FLIGHTS IN SCOPE</h1>
+                            </div>
+
+                            <hr style="border-top: 3px double #000000;">
+                            <table id="plane_field"
+                                style="background-color: white;border: 3px;border-style: solid; padding: 10px;box-shadow: 1px 1px 5px #555 inset;font-size: 16px">
+                                <thead>
+                                    <th scope="col">Flight Number</th>
+                                    <th scope="col">Alt</th>
+                                    <th scope="col">AirCraft Type</th>
+                                    <th scope="col">Airport</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr id="plane 1">
+                                        <td>N99322</td>
+                                        <td id="plane_1_direction">012</td>
+                                        <td>B350</td>
+                                        <td>JFK</td>
+                                    </tr>
+                                    <tr id="plane 2" hidden="true">
+                                        <td>AB9322</td>
+                                        <td id="plane_2_direction">020</td>
+                                        <td>B350</td>
+                                        <td>PHL</td>
+                                    </tr>
+                                    <tr id="plane 3" hidden="true">
+                                        <td>M32413</td>
+                                        <td id="plane_3_direction">160</td>
+                                        <td>M142</td>
+                                        <td>MBS</td>
+                                    </tr>
+                                    <tr id="plane 4" hidden="true">
+                                        <td>E2432</td>
+                                        <td id="plane_4_direction">90</td>
+                                        <td>M132</td>
+                                        <td>TPA</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6"
+                            style="background-image: linear-gradient(grey, white);border: 3px;border-style: solid;box-shadow: 1px 1px 5px #555 inset; margin-bottom: 10px">
+                            <div>
+                                <h1>FLIGHT PATH</h1>
+                            </div>
+                            <hr style="border-top: 3px double #000000;">
+                            <input id="inputFlight" style="margin-bottom: 10px" type="text" value=""
+                                class="form-control">
+
+                        </div>
+
+                    </div>
+
+
                 </div>
+
 
             </div>
 
-            <script>
-                mapboxgl.accessToken = 'pk.eyJ1IjoiamdyaXpvcyIsImEiOiJja24zMzA4NjExZGpoMnVubnQ0NWpjbW5nIn0.HI1NtzdoIkAf9rABmJcO4Q';
-                var coordinates = document.getElementById('coordinates');
-                var map = new mapboxgl.Map({
-                    container: 'map',
-                    style: 'mapbox://styles/jgrizos/ckn363vkg0gf517mpg45zroq1',
-                    center: [-75.2437, 39.8729],
-                    zoom: 10
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"></script>
+    </body>
+    <script src="javascripts/fetchAirplaneData.js"></script>
+    <script>
+        var airplanes = fetchAirplaneData();
+        var map;
+        var speed = 1
+        var running = 1
+        var planeOneInScreen = true;
+        var planeTwoInScreen = false;
+        var planeThreeInScreen = false;
+        var planeFourInScreen = false;
+        var planesInSimulation = [{ flightNumber: "N99322", Altitude: "012", Speed: 1, Direction: "120", Airport: "JFK", AircraftType: "*C143", htmlOne: "", htmlTwo: "" },
+        { flightNumber: "AB9322", Altitude: "020", Direction: "180", Speed: 1, Airport: "PHL", AircraftType: "*B350", htmlOne: "", htmlTwo: "" },
+        { flightNumber: "M32413", Altitude: "026", Speed: 1, Direction: "20", Airport: "MBS", AircraftType: "*M142", htmlOne: "", htmlTwo: "" },
+        { flightNumber: "E2432", Altitude: "015", Speed: 1, Direction: "45", Airport: "TPA", AircraftType: "*M132", htmlOne: "", htmlTwo: "" }]
+        function createPlanDivs() {
+            planesInSimulation.forEach((plane) => {
+                plane.htmlOne = `<b id="plane">${plane.flightNumber} <br>${plane.Airport}   ${plane.AircraftType}</b>`
+                plane.htmlTwo = `<b id="plane">${plane.flightNumber}<br> ${plane.Altitude}   ${plane.Direction}</b>`;
+
+            })
+        }
+        createPlanDivs();
+        console.log(planesInSimulation)
+        async function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                mapId: "94f65880206b7e9a",
+                center: { lat: 40.695213, lng: -74.184601 },
+                zoom: 16,
+                disableDefaultUI:true
+
+            });
+
+            var outerCounter = 0;
+
+            async function createMarkers(Lat, Long, flightDiv, altDiv) {
+                const latLng = new google.maps.LatLng(Lat, Long);
+                var markerHtml = await createHTMLMapMarker({
+                    latlng: latLng,
+                    map: map,
+                    html: `<b id="plane"></b>`
                 });
+                return markerHtml;
+            }
+            //create markers
+            const marker1 = await createMarkers(40.695213, -74.184601, planesInSimulation[0].htmlOne, planesInSimulation[0].htmlTwo)
+            const marker2 = await createMarkers(40.68, -74.17, `<b id="plane">N99322 <br> VCN   *B350</b>`, `<b id="plane">2</b>`)
 
-            </script>
-            <div id="VirtualKey" style="position: fixed;left: 1050px;bottom: 220px;">
 
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M1" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M2" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M3" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M4" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
-                    value="CON" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
-                    value="MAP" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M5" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M6" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M7*" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M8" onclick="input(this);" />
-                <br />
 
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M9" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M10" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M11" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M12" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
-                    value="TRK" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:white;color:black;width:40px; height:40px;"
-                    value="USR" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M13" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M14" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M15*" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="M16" onclick="input(this);" />
+            var changePath = false;
+            const element = document.getElementById("switch_path");
+            // element.addEventListener("click", myFunction);
 
-                <br />
-                <input id="btnClear" type="button" style="background-color:yellow;color:black;width:70px; height:30px;"
-                    value="Clear" onclick="clearButton();" />
-                <input id="btnDel" type="button" style="background-color:yellow;color:black;width:100px; height:30px;"
-                    value="Back Space" onclick="del();" />
-                <input id="btnSpace" type="button" style="background-color:yellow;color:black;width:185px; height:30px;"
-                    value="Space" onclick="space();" />
-                <input id="btnEnter" type="button" style="background-color:red;color:black;width:70px; height:30px;"
-                    value="Enter" onclick="createFlightStrip();" />
-                <br />
+            function myFunction() {
+                changePath = true;
 
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="INITCTRL" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="TRKRPOS" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="TRKSUSP" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="TERMCTRL" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="HNDOFF" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="FLTDATA" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="MULTIFUNC" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F8" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
-                    value="EMR" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
-                    value="." onclick="input(this);" />
-                <br />
+            }
 
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F9" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F10" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="CA" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F12" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F13" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F14" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="TGTGEN" onclick="space();" />
-                <input id="btnG" type="button" style="background-color:green;color:black;width:40px; height:40px;"
-                    value="F16" onclick="Clear();" />
-                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
-                    value="IFR*" onclick="del();" />
-                <input id="btnG" type="button" style="background-color:yellow;color:black;width:40px; height:40px;"
-                    value="VFR/" onclick="input(this);" />
+            //<br> <b style="font-size: 30px;">.</b>
+            //animate marker
+            animateMarker(marker1, planesInSimulation[0].htmlOne, planesInSimulation[0].htmlTwo, [.0001, .0001], 0);
+            animateMarker(marker2, `<b id="plane">AB9322 <br> PHL   *C143</b>`, `<b id="plane">AB9322 <br> 090    20C</b>`, [.0001, -.0001], 1);
 
-                <div id="Alpha">
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" value="A"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" value="B"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" value="C"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" value="D"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="E"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="F"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="G"
-                        onclick=inputKey(this.value); />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="1"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="2"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="3"
-                        onclick="inputKey(this.value);" />
-                    <br />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="H"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="I"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="J"
-                        onclick="inputKey(this.value)" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="K"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="L"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="M"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="N"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="4"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="5"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="6"
-                        onclick="inputKey(this.value);" />
-                    <br />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="O"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="P"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="Q"
-                        onclick="inputKey(this.value)" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="R"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="S"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="T"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="U"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="7"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="8"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="9"
-                        onclick="inputKey(this.value);" />
-                    <br />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="V"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="W"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="X"
-                        onclick="inputKey(this.value)" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="Y"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="Z"
-                        onclick="inputKey(this.value);" />
-                    <input id="btnAlpha" type="button"
-                        style="background-color:white;color:black;width:40px; height:40px;" Value="."
-                        onclick="input(this);" />
-                    <input id="btn1" type="button" style="width:40px; height:40px;" onclick="input(this);" />
-                    <input id="btnnum" type="button" style="width:40px; height:40px;" onclick="input(this);" />
-                    <input id="btnnum" type="button"
-                        style="background-color:lightskyblue;color:black;width:40px; height:40px;" Value="0"
-                        onclick="input(this);" />
-                    <input id="btnnum" type="button" style="width:40px; height:40px;" onclick="input(this);" />
-                </div>
+            setTimeout(async () => {
+                const marker3 = await createMarkers(40.693513, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">3</b>`)
+                animateMarker(marker3, `<b id="plane">M32413 <br>MBS   *M142</b>`, `<b id="plane">M32413 <br> 160    18C</b>`, [.0001, -.0001], 2);
+            }, 25000 / speed);
 
-            </div>
-</body>
+            setTimeout(async () => {
+                const marker4 = await createMarkers(40.705213, -74.184601, `<b id="plane">Plane</b>`, `<b id="plane">4</b>`)
+                animateMarker(marker4, `<b id="plane">E24325 <br>TPA *M132</b>`, `<b id="plane">E2432 <br> 90    22C</b>`, [-.0002, 0], 3);
+            }, 20000 / speed);
 
-</html>
+            // if (outerCounter == 100) {
+            //     const marker4 = await createMarkers(40.695213, -74.183601, `<b id="plane">Plane</b>`, `<b id="plane">4</b>`)
+            //     animateMarker(marker4, `<b id="plane">Plane</b>`, `<b id="plane">3</b>`, [-.0002, 0], "plane 4");
+            // }
+
+
+            async function animateMarker(marker, divOne, divTwo, direction, plane) {
+
+                animateCircle(marker);
+
+                // Use the DOM setInterval() function to change the offset of the symbol
+                // at fixed intervals.
+                function animateCircle(marker) {
+                    marker.remove();
+                    setTimeout(() => {
+                        if (running) {
+
+                            if (marker.getPosition().lat() < 40.705313 && marker.getPosition().lat() > 40.685813000000046 && marker.getPosition().lng() > -74.19440100000033) {
+                                if (plane === 1) {
+                                    planeTwoInScreen = true;
+                                    document.getElementById('plane 2').hidden = false;
+                                }
+                                if (plane === 2) {
+                                    planeThreeInScreen = true;
+                                    document.getElementById('plane 3').hidden = false;
+                                }
+                                if (plane === 3) {
+                                    planeFourInScreen = true;
+                                    document.getElementById('plane 4').hidden = false;
+                                }
+                            }
+                            else {
+                                if (plane === 0) {
+                                    planeTwoInScreen = false;
+                                    document.getElementById('plane 1').hidden = true;
+
+                                }
+                                if (plane === 1) {
+                                    document.getElementById('plane 2').hidden = true;
+                                }
+                                if (plane === 2) {
+                                    document.getElementById('plane 3').hidden = true;
+                                }
+                                if (plane === 3) {
+                                    document.getElementById('plane 4').hidden = true;
+                                }
+                            }
+
+                            if (plane !== 0 && Math.round(marker.getPosition().lng() * 10000) / 10000 == Math.round(-74.182701 * 10000) / 10000) {
+                                document.getElementById('plane 2').hidden = true;
+                                marker.remove();
+                                marker.html = `<b></b>`;
+                                return
+                            }
+                            if (!changePath || plane !== 0) {
+                                //marker.setPosition({ lat: marker.getPosition().lat() + .0001, lng: marker.getPosition().lng() + .0001 })
+                                var latLng = new google.maps.LatLng(marker.getPosition().lat() + direction[0]*planesInSimulation[plane].Speed, marker.getPosition().lng() + direction[1]*planesInSimulation[plane].Speed);
+                                marker.latlng = latLng;
+
+
+                            }
+                            if (changePath && plane === 0) {
+                                //marker.setPosition({ lat: marker.getPosition().lat() - .0001, lng: marker.getPosition().lng() + .0001 })
+                                var latLng = new google.maps.LatLng(marker.getPosition().lat() - direction[0]*planesInSimulation[plane].Speed, marker.getPosition().lng() + direction[1]*planesInSimulation[plane].Speed);
+                                marker.latlng = latLng;
+
+                            }
+                            marker.remove();
+                            if ((Math.floor(Math.random() * 10) + 1) % 2 == 0) {
+                                marker.remove();
+                                // console.log('Plane getting div change', planesInSimulation[plane])
+                                marker.html = planesInSimulation[plane].htmlOne;
+
+                            }
+                            if ((Math.floor(Math.random() * 10) + 1) % 2 != 0) {
+                                marker.remove();
+                                //console.log('Plane getting div change', planesInSimulation[plane])
+                                marker.html = planesInSimulation[plane].htmlTwo;
+
+                            }
+
+                            outerCounter++;
+                        }
+                        animateCircle(marker)
+                        map.setZoom(map.getZoom());
+                    }, 1000 / speed);
+                    return
+                }
+            }
+        }
+
+        function changeSpeed(changedSpeed) {
+            speed = changedSpeed;
+        }
+        var time = 0
+        setTimeout(() => {
+            increment()
+        }, 2000)
+
+        document.getElementById('output').innerHTML = '00:00:00'
+
+        function startPause() {
+            if (running == 0) {
+                running = 1
+                increment()
+                speed = 1
+                // document.getElementById('startPause').content = '❙❙'
+            } else {
+                running = 0
+                speed = 1
+                // document.getElementById('startPause').innerHTML = 'Resume'
+            }
+        }
+
+
+        function reset() {
+            running = 1
+            time = 0
+            document.getElementById('startPause').innerHTML = 'Start'
+            document.getElementById('output').innerHTML = '00:00:00'
+        }
+
+
+
+        function increment() {
+            if (running == 1) {
+                setTimeout(function () {
+                    time++
+                    var mins = Math.floor(time / 10 / 60)
+                    var secs = Math.floor(time / 10 % 60)
+                    var tenths = time % 10
+
+                    if (mins < 10) {
+                        mins = '0' + mins
+                    }
+
+                    if (secs < 10) {
+                        secs = '0' + secs
+                    }
+
+                    if (tenths < 10) {
+                        tenths = tenths + '0'
+                    }
+                    document.getElementById('output').innerHTML = mins + ':' + secs + ':' + tenths
+                    increment()
+                }, 100 / speed)
+            }
+        }
+        function inputKey(keyValue) {
+            document.getElementById("inputFlight").value = document.getElementById("inputFlight").value + keyValue
+        }
+
+        function clear() {
+            document.getElementById("inputFlight").value = document.getElementById("inputFlight").value.slice(0,10);
+        }
+
+        function deleteKey() {
+            document.getElementById("inputFlight").value = document.getElementById("inputFlight").value.slice(0, -1)
+        }
+
+        function enter() {
+            var flightNumber = document.getElementById("inputFlight").value.slice(0, 6);
+            var command = document.getElementById("inputFlight").value.slice(6, 7);
+            var changedValue = document.getElementById("inputFlight").value.slice(7, 10);
+            var planeToChange
+            for (var plane of planesInSimulation) {
+                console.log("plane",plane)
+                console.log("flight",flightNumber)
+                if (plane.flightNumber === flightNumber) {
+                    console.log("here")
+                    planeToChange = plane.flightNumber
+                }
+            }
+            if (planeToChange) {
+                const index = planesInSimulation.findIndex(object => {
+                    return (object.flightNumber === planeToChange)+1;
+                });
+                console.log(command)
+
+                if (command === "A") {
+                    planesInSimulation[index].Altitude = changedValue;
+                    console.log(changedValue)
+                    console.log("in command :", planesInSimulation[index])
+                    createPlanDivs()
+                }
+                if (command === "S") {
+                    planesInSimulation[index].Speed = changedValue;
+                    createPlanDivs()
+                }
+                if (command === "H") {
+                    console.log("in here")
+                    planesInSimulation[index].Direction = changedValue;
+                    createPlanDivs()
+                }
+                if(command!="S"&&command!="H"&&command!="A")
+                {
+                    alert("Invalid Command \n Please Enter H , S , A")
+                }
+            }
+            // if(!planeToChange){
+            //     alert("No Plane With Flight Number :"+flightNumber)
+            // }
+            
+            
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb0DiPoQQKkRvD0Iz3ey9DjXforeSt6qw&callback=initMap"
+        async defer></script>
