@@ -660,64 +660,65 @@
                         if (running) {
 
                             if (marker.getPosition().lat() < 40.705313 && marker.getPosition().lat() > 40.685813000000046 && marker.getPosition().lng() > -74.19440100000033) {
-                                if (plane == 1) {
+                                if (plane === 1) {
                                     planeTwoInScreen = true;
                                     document.getElementById('plane 2').hidden = false;
                                 }
-                                if (plane == 2) {
+                                if (plane === 2) {
                                     planeThreeInScreen = true;
                                     document.getElementById('plane 3').hidden = false;
                                 }
-                                if (plane == 3) {
+                                if (plane === 3) {
                                     planeFourInScreen = true;
                                     document.getElementById('plane 4').hidden = false;
                                 }
                             }
                             else {
-                                if (plane == 0) {
+                                if (plane === 0) {
                                     planeTwoInScreen = false;
                                     document.getElementById('plane 1').hidden = true;
 
                                 }
-                                if (plane == 1) {
+                                if (plane === 1) {
                                     document.getElementById('plane 2').hidden = true;
                                 }
-                                if (plane == 2) {
+                                if (plane === 2) {
                                     document.getElementById('plane 3').hidden = true;
                                 }
-                                if (plane == 3) {
+                                if (plane === 3) {
                                     document.getElementById('plane 4').hidden = true;
                                 }
                             }
 
-                            if (plane !== 1 && Math.round(marker.getPosition().lng() * 10000) / 10000 == Math.round(-74.182701 * 10000) / 10000) {
+                            if (plane !== 0 && Math.round(marker.getPosition().lng() * 10000) / 10000 == Math.round(-74.182701 * 10000) / 10000) {
                                 document.getElementById('plane 2').hidden = true;
                                 marker.remove();
                                 marker.html = `<b></b>`;
                                 return
                             }
-                            if (!changePath || plane !== 1) {
+                            if (!changePath || plane !== 0) {
                                 //marker.setPosition({ lat: marker.getPosition().lat() + .0001, lng: marker.getPosition().lng() + .0001 })
-                                var latLng = new google.maps.LatLng(marker.getPosition().lat() + direction[0], marker.getPosition().lng() + direction[1]);
+                                var latLng = new google.maps.LatLng(marker.getPosition().lat() + direction[0]*planesInSimulation[plane].Speed, marker.getPosition().lng() + direction[1]*planesInSimulation[plane].Speed);
                                 marker.latlng = latLng;
 
 
                             }
-                            if (changePath && plane === 1) {
+                            if (changePath && plane === 0) {
                                 //marker.setPosition({ lat: marker.getPosition().lat() - .0001, lng: marker.getPosition().lng() + .0001 })
-                                var latLng = new google.maps.LatLng(marker.getPosition().lat() - direction[0], marker.getPosition().lng() + direction[1]);
+                                var latLng = new google.maps.LatLng(marker.getPosition().lat() - direction[0]*planesInSimulation[plane].Speed, marker.getPosition().lng() + direction[1]*planesInSimulation[plane].Speed);
                                 marker.latlng = latLng;
 
                             }
                             marker.remove();
                             if ((Math.floor(Math.random() * 10) + 1) % 2 == 0) {
                                 marker.remove();
-                                console.log(planesInSimulation[plane])
+                                // console.log('Plane getting div change', planesInSimulation[plane])
                                 marker.html = planesInSimulation[plane].htmlOne;
 
                             }
                             if ((Math.floor(Math.random() * 10) + 1) % 2 != 0) {
                                 marker.remove();
+                                //console.log('Plane getting div change', planesInSimulation[plane])
                                 marker.html = planesInSimulation[plane].htmlTwo;
 
                             }
@@ -803,20 +804,24 @@
 
         function enter() {
             var flightNumber = document.getElementById("inputFlight").value.slice(0, 6);
-            console.log("Flight Number", flightNumber)
             var command = document.getElementById("inputFlight").value.slice(6, 7);
             var changedValue = document.getElementById("inputFlight").value.slice(7, 10);
-            console.log("Degrees", changedValue)
-            var plane = planesInSimulation.forEach((plane) => { if (plane.flightNumber == flightNumber) return plane })
+            var planeToChange
+            for (var plane in planesInSimulation) {
+                if (plane.flightNumber === flightNumber) {
+                    planeToChange = plane.flightNumber
+                }
+            }
             if (plane) {
                 const index = planesInSimulation.findIndex(object => {
-                    return object.flightNumber === plane.flightNumber;
+                    return (object.flightNumber === planeToChange)+1;
                 });
-                console.log(plane)
+                console.log(index)
 
                 if (command == "A") {
                     planesInSimulation[index].Altitude = changedValue;
-                    console.log("in command :",planesInSimulation[index])
+                    console.log(changedValue)
+                    console.log("in command :", planesInSimulation[index])
                     createPlanDivs()
                 }
                 if (command = "S") {
@@ -824,7 +829,8 @@
                     createPlanDivs()
                 }
                 if (command = "H") {
-                    planesInSimulation[index].Direction = changeValue;
+
+                    planesInSimulation[index].Direction = changedValue;
                     createPlanDivs()
                 }
             }
