@@ -231,7 +231,7 @@
                                         onclick="space();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M3"
-                                        onclick="Clear();" />
+                                        onclick="clear();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M4"
                                         onclick="del();" />
@@ -246,7 +246,7 @@
                                         onclick="space();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M6"
-                                        onclick="Clear();" />
+                                        onclick="clear();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M7*"
                                         onclick="del();" />
@@ -263,7 +263,7 @@
                                         onclick="space();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M11"
-                                        onclick="Clear();" />
+                                        onclick="clear();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M12"
                                         onclick="del();" />
@@ -278,7 +278,7 @@
                                         onclick="space();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M14"
-                                        onclick="Clear();" />
+                                        onclick="clear();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;" value="M15*"
                                         onclick="del();" />
@@ -289,13 +289,13 @@
                                     <br />
                                     <input id="btnClear" type="button"
                                         style="background-color:yellow;color:black;width:70px; height:30px;"
-                                        value="Clear" onclick="clearButton();" />
+                                        value="Clear" onclick="clear();" />
                                     <input id="btnDel" type="button"
                                         style="background-color:yellow;color:black;width:100px; height:30px;"
-                                        value="Back Space" onclick="del();" />
+                                        value="Back Space" onclick="deleteKey();" />
                                     <input id="btnSpace" type="button"
                                         style="background-color:yellow;color:black;width:185px; height:30px;"
-                                        value="Space" onclick="space();" />
+                                        value="Space" onclick="inputKey(' ');" />
                                     <input id="btnEnter" type="button"
                                         style="background-color:red;color:black;width:70px; height:30px;" value="Enter"
                                         onclick="enter();" />
@@ -309,7 +309,7 @@
                                         value="TRKRPOS" onclick="space();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;"
-                                        value="TRKSUSP" onclick="Clear();" />
+                                        value="TRKSUSP" onclick="clear();" />
                                     <input id="btnG" type="button"
                                         style="background-color:green;color:black;width:40px; height:40px;"
                                         value="TERMCTRL" onclick="del();" />
@@ -597,7 +597,8 @@
             map = new google.maps.Map(document.getElementById('map'), {
                 mapId: "94f65880206b7e9a",
                 center: { lat: 40.695213, lng: -74.184601 },
-                zoom: 16
+                zoom: 16,
+                disableDefaultUI:true
 
             });
 
@@ -795,7 +796,7 @@
         }
 
         function clear() {
-            document.getElementById("inputFlight").value = ""
+            document.getElementById("inputFlight").value = document.getElementById("inputFlight").value.slice(0,10);
         }
 
         function deleteKey() {
@@ -807,12 +808,15 @@
             var command = document.getElementById("inputFlight").value.slice(6, 7);
             var changedValue = document.getElementById("inputFlight").value.slice(7, 10);
             var planeToChange
-            for (var plane in planesInSimulation) {
+            for (var plane of planesInSimulation) {
+                console.log("plane",plane)
+                console.log("flight",flightNumber)
                 if (plane.flightNumber === flightNumber) {
+                    console.log("here")
                     planeToChange = plane.flightNumber
                 }
             }
-            if (plane) {
+            if (planeToChange) {
                 const index = planesInSimulation.findIndex(object => {
                     return (object.flightNumber === planeToChange)+1;
                 });
@@ -833,7 +837,16 @@
                     planesInSimulation[index].Direction = changedValue;
                     createPlanDivs()
                 }
+                if(command!="S"&&command!="H"&&command!="A")
+                {
+                    alert("Invalid Command \n Please Enter H , S , A")
+                }
             }
+            // if(!planeToChange){
+            //     alert("No Plane With Flight Number :"+flightNumber)
+            // }
+            
+            
         }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb0DiPoQQKkRvD0Iz3ey9DjXforeSt6qw&callback=initMap"
