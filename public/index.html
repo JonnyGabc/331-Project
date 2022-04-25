@@ -816,20 +816,20 @@
                 const index = planesInSimulation.findIndex(object => {
                     return (object.flightNumber === planeToChange)+1;
                 });
-                console.log(index)
+                console.log(command)
 
-                if (command == "A") {
+                if (command === "A") {
                     planesInSimulation[index].Altitude = changedValue;
                     console.log(changedValue)
                     console.log("in command :", planesInSimulation[index])
                     createPlanDivs()
                 }
-                if (command = "S") {
+                if (command === "S") {
                     planesInSimulation[index].Speed = changedValue;
                     createPlanDivs()
                 }
-                if (command = "H") {
-
+                if (command === "H") {
+                    console.log("in here")
                     planesInSimulation[index].Direction = changedValue;
                     createPlanDivs()
                 }
