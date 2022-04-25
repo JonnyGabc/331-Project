@@ -85,6 +85,12 @@
             font-size: 2rem;
         }
 
+        #refresh:checked {
+            content: "⟳";
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
         #play-pause-label::after {
             content: '❙❙';
             font-weight: 300;
@@ -137,6 +143,11 @@
                 <div class="col-xsm-1">
                     <img src="./images/fastforward.png" onclick="changeSpeed(5)"
                         style="height: 25px; width: 25px; margin-top: 15px; margin-left:10px;" alt="">
+                </div>
+                <div class="col-xsm-1" style="float: left;">
+                    <b style="font-size: 32; font-weight: 900;"  onClick="window.location.reload()">⟳</b>
+
+
                 </div>
 
 
@@ -316,57 +327,57 @@
                                     </table>
 
                                     <table
-                                    style="background-color: rgb(236, 238, 232);border: 2px; margin-bottom:10px; border-style: solid;box-shadow: 1px 1px 5px #555 inset;"
-                                    id="airplaneInputData2">
-                                    <tr style="color:black">
-                                        <th>Call Sign</th>
-                                        <th>SAQuake</th>
-                                        <th>Dep Airport </th>
-                                        <th>Complete Route</th>
+                                        style="background-color: rgb(236, 238, 232);border: 2px; margin-bottom:10px; border-style: solid;box-shadow: 1px 1px 5px #555 inset;"
+                                        id="airplaneInputData2">
+                                        <tr style="color:black">
+                                            <th>Call Sign</th>
+                                            <th>SAQuake</th>
+                                            <th>Dep Airport </th>
+                                            <th>Complete Route</th>
 
-                                    </tr>
+                                        </tr>
 
-                                    <td style="height: 50px;"><input class='callSignText' value="E24323"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
-
-
-                                    <td style="height: 25px;"><input class='SAQuakeText' value="22"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
-                                    <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="TPA"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;">
-                                    </td>
-                                    <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
-                                            value="APT2FIX2FIX3AWY2FIX4APT3"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"> </td>
-
-                                    <tr style="color:black">
-
-                                        <th>AirCraft Type</th>
-                                        <th>Proposed Time</th>
-
-                                    </tr>
-                                    <td style="height: 50px;"><input class='aircraftTypeText' value="M142"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
-                                    <td style="height: 50px;"> <input class='proposedTimeText' value="A0230"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
-
-                                    <tr style="color:black">
-                                        <th>Flight Plan</th>
-                                        <th>Req Altitude</th>
-                                        <th>Remarks</th>
-                                    </tr>
-                                    <td style="height: 50px;"><input class='flightPlanText' value="222"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"> </td>
-                                    <td style="height: 50px;"> <input class='reqAltitudeText' value="15000"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
-                                    <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
-                                            style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td style="height: 50px;"><input class='callSignText' value="E24323"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
 
 
+                                        <td style="height: 25px;"><input class='SAQuakeText' value="22"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td rowspan="5" style="height: 50px;"><input class='depAirportText' value="TPA"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;">
+                                        </td>
+                                        <td rowspan="3" style="height: 10px;"><input class='completeRouteText'
+                                                value="APT2FIX2FIX3AWY2FIX4APT3"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"> </td>
 
-                                </table>
+                                        <tr style="color:black">
 
-                                    
+                                            <th>AirCraft Type</th>
+                                            <th>Proposed Time</th>
+
+                                        </tr>
+                                        <td style="height: 50px;"><input class='aircraftTypeText' value="M142"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td style="height: 50px;"> <input class='proposedTimeText' value="A0230"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+
+                                        <tr style="color:black">
+                                            <th>Flight Plan</th>
+                                            <th>Req Altitude</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                        <td style="height: 50px;"><input class='flightPlanText' value="222"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"> </td>
+                                        <td style="height: 50px;"> <input class='reqAltitudeText' value="15000"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+                                        <td style="height: 50px;"> <input class='remarksText' value="FT TRAINING FLIGHT"
+                                                style="background-color: rgb(236, 238, 232); border: 0px none;"></td>
+
+
+
+                                    </table>
+
+
 
 
                                 </div>
@@ -736,14 +747,14 @@
         var planeTwoInScreen = false;
         var planeThreeInScreen = false;
         var planeFourInScreen = false;
-        var planesInSimulation = [{ flightNumber: "N99322", Altitude: "012", Speed: 1, Direction: "120", Airport: "JFK", AircraftType: "C143", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
-        { flightNumber: "AB9322", Altitude: "020", Direction: "180", Speed: 1, Airport: "PHL", AircraftType: "B350", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
-        { flightNumber: "M32413", Altitude: "026", Speed: 1, Direction: "20", Airport: "MBS", AircraftType: "M142", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
-        { flightNumber: "E24323", Altitude: "015", Speed: 2, Direction: "45", Airport: "TPA", AircraftType: "M132", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 }]
+        var planesInSimulation = [{ flightNumber: "N99322", Altitude: "012", Speed: 1, Direction: "120", Airport: "JFK", AircraftType: "C143", htmlOne: "", htmlTwo: "", DirectionX: 1, DirectionY: 1 },
+        { flightNumber: "AB9322", Altitude: "020", Direction: "180", Speed: 1, Airport: "PHL", AircraftType: "B350", htmlOne: "", htmlTwo: "", DirectionX: 1, DirectionY: 1 },
+        { flightNumber: "M32413", Altitude: "026", Speed: 1, Direction: "20", Airport: "MBS", AircraftType: "M142", htmlOne: "", htmlTwo: "", DirectionX: 1, DirectionY: 1 },
+        { flightNumber: "E24323", Altitude: "015", Speed: 2, Direction: "45", Airport: "TPA", AircraftType: "M132", htmlOne: "", htmlTwo: "", DirectionX: 1, DirectionY: 1 }]
         function createPlanDivs() {
             planesInSimulation.forEach((plane) => {
-                plane.htmlOne = `<b id="plane">${plane.flightNumber+"*"} <br>${plane.Airport}   ${plane.AircraftType} <br> •</b>`
-                plane.htmlTwo = `<b id="plane">${plane.flightNumber+"*"}<br> ${plane.Altitude}   ${plane.Speed*100} <br>•</b>`;
+                plane.htmlOne = `<b id="plane">${plane.flightNumber + "*"} <br>${plane.Airport}   ${plane.AircraftType} <br> •</b>`
+                plane.htmlTwo = `<b id="plane">${plane.flightNumber + "*"}<br> ${plane.Altitude}   ${plane.Speed * 100} <br>•</b>`;
 
             })
         }
@@ -757,7 +768,7 @@
                 disableDefaultUI: true
 
             });
-
+            
             var outerCounter = 0;
 
             async function createMarkers(Lat, Long, flightDiv, altDiv) {
@@ -853,19 +864,19 @@
                                 marker.html = `<b></b>`;
                                 return
                             }
-                            if (!changePath || plane !== 0) {
-                                //marker.setPosition({ lat: marker.getPosition().lat() + .0001, lng: marker.getPosition().lng() + .0001 })
-                                var latLng = new google.maps.LatLng(marker.getPosition().lat() + (direction[0] * planesInSimulation[plane].DirectionY), marker.getPosition().lng() + (direction[1] * planesInSimulation[plane].DirectionX));
-                                marker.latlng = latLng;
+
+                            //marker.setPosition({ lat: marker.getPosition().lat() + .0001, lng: marker.getPosition().lng() + .0001 })
+                            var latLng = new google.maps.LatLng(marker.getPosition().lat() + (direction[0] * planesInSimulation[plane].DirectionY), marker.getPosition().lng() + (direction[1] * planesInSimulation[plane].DirectionX));
+                            marker.latlng = latLng;
 
 
-                            }
-                            if (changePath && plane === 0) {
-                                //marker.setPosition({ lat: marker.getPosition().lat() - .0001, lng: marker.getPosition().lng() + .0001 })
-                                var latLng = new google.maps.LatLng(marker.getPosition().lat() - direction[0] * planesInSimulation[plane].DirectionY, marker.getPosition().lng() + direction[1] * planesInSimulation[plane].DirectionX);
-                                marker.latlng = latLng;
 
-                            }
+                            // if (changePath && plane === 0) {
+                            //     //marker.setPosition({ lat: marker.getPosition().lat() - .0001, lng: marker.getPosition().lng() + .0001 })
+                            //     var latLng = new google.maps.LatLng(marker.getPosition().lat() - direction[0] * planesInSimulation[plane].DirectionY, marker.getPosition().lng() + direction[1] * planesInSimulation[plane].DirectionX);
+                            //     marker.latlng = latLng;
+
+                            // }
                             marker.remove();
                             if ((Math.floor(Math.random() * 10) + 1) % 2 == 0) {
                                 marker.remove();
@@ -884,7 +895,7 @@
                         }
                         animateCircle(marker)
                         map.setZoom(map.getZoom());
-                    }, 1000 / speed /planesInSimulation[plane].Speed);
+                    }, 1000 / speed / planesInSimulation[plane].Speed);
                     return
                 }
             }
@@ -964,15 +975,20 @@
             var command = document.getElementById("inputFlight").value.slice(6, 7);
             var changedValue = document.getElementById("inputFlight").value.slice(7, 10);
             var planeToChange
-            for (var i=0; i<planesInSimulation.length; i++) {                
+            console.log("i")
+
+            for (var i = 0; i < planesInSimulation.length; i++) {
                 if (planesInSimulation[i].flightNumber === flightNumber) {
-                    
+
+
                     planeToChange = i;
+                    console.log("i", i)
+
                 }
             }
-            if (planeToChange) {
+            if (planeToChange || planeToChange === 0) {
                 var index = planeToChange;
-
+                console.log("found plane")
                 if (command === "A") {
                     planesInSimulation[index].Altitude = changedValue;
                     console.log(changedValue)
@@ -980,22 +996,22 @@
                     createPlanDivs()
                 }
                 if (command === "S") {
-                    planesInSimulation[index].Speed = changedValue/100;
+                    planesInSimulation[index].Speed = changedValue / 100;
                     createPlanDivs()
                 }
                 if (command === "H") {
                     console.log("in here")
                     planesInSimulation[index].Direction = changedValue;
-                    if(changedValue>90){
-                        planesInSimulation[index].DirectionX=-planesInSimulation[index].DirectionX; 
-                        console.log('change value >90',planesInSimulation[index].DirectionX)
+                    if (changedValue > 90) {
+                        planesInSimulation[index].DirectionX = -planesInSimulation[index].DirectionX;
+                        console.log('change value >90', planesInSimulation[index].DirectionX)
 
                     }
-                    else{
-                        planesInSimulation[index].DirectionY=-planesInSimulation[index].DirectionY;
-                        console.log('change value <90',planesInSimulation[index].DirectionY)
+                    else {
+                        planesInSimulation[index].DirectionY = -planesInSimulation[index].DirectionY;
+                        console.log('change value <90', planesInSimulation[index].DirectionY)
 
-                    }                    
+                    }
                     createPlanDivs()
                 }
                 if (command != "S" && command != "H" && command != "A") {
