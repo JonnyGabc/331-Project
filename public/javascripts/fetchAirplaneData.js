@@ -7,19 +7,18 @@ async function fetchAirplaneData() {
     })
         .then(res => res.json())
         .then(airPlaneData => {
-            console.log(airPlaneData)
             if (airPlaneData.Success) { 
                 let airPlaneDataObj=JSON.parse(JSON.stringify(airPlaneData))   
                 localStorage.setItem("airplanes",JSON.stringify(airPlaneDataObj.Message))  
-                console.log(localStorage.getItem('airplanes'))           
+                //console.log(localStorage.getItem('airplanes'))           
                 airPlaneDataObj.Message.forEach(element => {                    
-                    let text = document.getElementById("airplaneInputData").cloneNode(true)  
+                    let text = document.getElementById("airplaneInputData2").cloneNode(true)  
                     text.style.display="";
-                    for(var i=0; i< text.childNodes.length;i++){
-                        
+                    for(var i=0; i< text.childNodes.length;i++){                       
+                       
                         if(text.childNodes[i].className =="callSign")
                         {                            
-                            text.childNodes[i].placeholder = element.callSign                            
+                            text.childNodes[i].value = element.callSign                            
                         }
                         if(text.childNodes[i].className =="aircraftType")
                         {
@@ -43,7 +42,7 @@ async function fetchAirplaneData() {
                         }
                     }              
                     
-                    document.getElementById('leftTable').appendChild(text)
+                    document.getElementById('flightStripBox').appendChild(text)
                 });
             // })
             }
