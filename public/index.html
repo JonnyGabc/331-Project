@@ -62,6 +62,7 @@
 
         #plane {
             color: white;
+            font-size: 14;
         }
 
         #time_row {
@@ -687,7 +688,7 @@
                                         <td>MBS</td>
                                     </tr>
                                     <tr id="plane 4" hidden="true">
-                                        <td>E2432</td>
+                                        <td>E24323</td>
                                         <td id="plane_4_direction">90</td>
                                         <td>M132</td>
                                         <td>TPA</td>
@@ -735,14 +736,14 @@
         var planeTwoInScreen = false;
         var planeThreeInScreen = false;
         var planeFourInScreen = false;
-        var planesInSimulation = [{ flightNumber: "N99322", Altitude: "012", Speed: 1, Direction: "120", Airport: "JFK", AircraftType: "*C143", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
-        { flightNumber: "AB9322", Altitude: "020", Direction: "180", Speed: 1, Airport: "PHL", AircraftType: "*B350", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
-        { flightNumber: "M32413", Altitude: "026", Speed: 1, Direction: "20", Airport: "MBS", AircraftType: "*M142", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
-        { flightNumber: "E2432", Altitude: "015", Speed: 1, Direction: "45", Airport: "TPA", AircraftType: "*M132", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 }]
+        var planesInSimulation = [{ flightNumber: "N99322", Altitude: "012", Speed: 1, Direction: "120", Airport: "JFK", AircraftType: "C143", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
+        { flightNumber: "AB9322", Altitude: "020", Direction: "180", Speed: 1, Airport: "PHL", AircraftType: "B350", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
+        { flightNumber: "M32413", Altitude: "026", Speed: 1, Direction: "20", Airport: "MBS", AircraftType: "M142", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 },
+        { flightNumber: "E24323", Altitude: "015", Speed: 2, Direction: "45", Airport: "TPA", AircraftType: "M132", htmlOne: "", htmlTwo: "",DirectionX:1,DirectionY:1 }]
         function createPlanDivs() {
             planesInSimulation.forEach((plane) => {
-                plane.htmlOne = `<b id="plane">${plane.flightNumber} <br>${plane.Airport}   ${plane.AircraftType}</b>`
-                plane.htmlTwo = `<b id="plane">${plane.flightNumber}<br> ${plane.Altitude}   ${plane.Direction}</b>`;
+                plane.htmlOne = `<b id="plane">${plane.flightNumber+"*"} <br>${plane.Airport}   ${plane.AircraftType} <br> •</b>`
+                plane.htmlTwo = `<b id="plane">${plane.flightNumber+"*"}<br> ${plane.Altitude}   ${plane.Speed*100} <br>•</b>`;
 
             })
         }
@@ -795,7 +796,7 @@
 
             setTimeout(async () => {
                 const marker4 = await createMarkers(40.705213, -74.184601, planesInSimulation[3].htmlOne, planesInSimulation[3].htmlTwo)
-                animateMarker(marker4, planesInSimulation[3].htmlOne, planesInSimulation[3].htmlTwo, [-.0002, 0], 3);
+                animateMarker(marker4, planesInSimulation[3].htmlOne, planesInSimulation[3].htmlTwo, [-.0001, 0], 3);
             }, 20000 / speed);
 
             // if (outerCounter == 100) {
@@ -883,7 +884,7 @@
                         }
                         animateCircle(marker)
                         map.setZoom(map.getZoom());
-                    }, 1000 / speed / planesInSimulation[plane].Speed);
+                    }, 1000 / speed /planesInSimulation[plane].Speed);
                     return
                 }
             }
@@ -963,19 +964,14 @@
             var command = document.getElementById("inputFlight").value.slice(6, 7);
             var changedValue = document.getElementById("inputFlight").value.slice(7, 10);
             var planeToChange
-            for (var plane of planesInSimulation) {
-                console.log("plane", plane)
-                console.log("flight", flightNumber)
-                if (plane.flightNumber === flightNumber) {
-                    console.log("here")
-                    planeToChange = plane.flightNumber
+            for (var i=0; i<planesInSimulation.length; i++) {                
+                if (planesInSimulation[i].flightNumber === flightNumber) {
+                    
+                    planeToChange = i;
                 }
             }
             if (planeToChange) {
-                const index = planesInSimulation.findIndex(object => {
-                    return (object.flightNumber === planeToChange) + 1;
-                });
-                console.log(command)
+                var index = planeToChange;
 
                 if (command === "A") {
                     planesInSimulation[index].Altitude = changedValue;
@@ -984,7 +980,7 @@
                     createPlanDivs()
                 }
                 if (command === "S") {
-                    planesInSimulation[index].Speed = changedValue;
+                    planesInSimulation[index].Speed = changedValue/100;
                     createPlanDivs()
                 }
                 if (command === "H") {
@@ -992,9 +988,13 @@
                     planesInSimulation[index].Direction = changedValue;
                     if(changedValue>90){
                         planesInSimulation[index].DirectionX=-planesInSimulation[index].DirectionX; 
+                        console.log('change value >90',planesInSimulation[index].DirectionX)
+
                     }
                     else{
                         planesInSimulation[index].DirectionY=-planesInSimulation[index].DirectionY;
+                        console.log('change value <90',planesInSimulation[index].DirectionY)
+
                     }                    
                     createPlanDivs()
                 }
